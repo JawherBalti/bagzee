@@ -1,0 +1,19 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_top_nav_menu %}
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <li class="user-menu">
+                <a>
+                    <i class="fa fa-user fa-fw" aria-hidden="true"></i>
+                    {{ app.user.email }}
+                </a>
+            </li>
+            <li class="user-menu">
+                <a href="{{ url('app_logout') }}" class="btn btn-default btn-flat">
+                    <i class="fa fa-sign-out fa-fw"></i> Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

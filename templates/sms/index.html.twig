@@ -1,0 +1,76 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% block content %}
+    <a href="{{ path('smsStatistics_create') }}" class="btn btn-primary pull-right">Ajouter</a>
+    <div class="row">
+        <form method="post" action="">
+            <div class="col-lg-3">
+                <div class="input-group" data-provide="">
+                    <input value="{{ start|date('d-m-Y') }}" name="start" class="form-control" style="width: 250px" id="start" width="276" />
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="input-group" data-provide="">
+                    <input value="{{ end|date('d-m-Y') }}" name="end"  class="form-control" style="width: 250px" id="end" width="276" />
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+    </br>
+    <div class="row"><div class="col-sm-12"><table id="example2" class="table table-bordered table-hover dataTable dtr-inline" role="grid" aria-describedby="example2_info">
+                <thead>
+                <tr role="row">
+                    <th>id</th>
+                    <th>Nbre</th>
+                    <th>message</th>
+                    <th>date</th>
+                    <th>type</th>
+                    <th>action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sms in sms %}
+                    <tr class="odd">
+                        <td class="dtr-control sorting_1" tabindex="0">{{ sms.id }}</td>
+                        <td>{{ sms.nbre }}</td>
+                        <td>{{ sms.message|raw }}</td>
+                        <td>{{ sms.createdAt|date('d-m-Y') }}</td>
+                        <td>{{ sms.typeEnvoie }}</td>
+                    </tr>
+
+                {% endfor %}
+
+                <tfoot>
+                <tr role="row">
+                    <th>id</th>
+                    <th>Nbre</th>
+                    <th>message</th>
+                    <th>date</th>
+                    <th>type</th>
+                    <th>action</th>
+                </tr>
+
+                </tfoot>
+            </table></div></div>
+    <!-- Modal -->
+    <script>
+        $('#start').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'dd-mm-yyyy',
+        });
+        $('#end').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'dd-mm-yyyy',
+        });
+    </script>
+{% endblock %}

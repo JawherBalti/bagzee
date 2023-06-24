@@ -1,0 +1,98 @@
+ <table id="bagagiste" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>client</th>
+                <th>total</th>
+                <th>stripe_payment_intent</th>
+                <th>status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+{% for key,advertQuery in advertQuery %}
+            <tr>
+                <td><a href="">{{ advertQuery.id }}</a></td>
+                <td>{{ advertQuery.client.firstname }} {{ advertQuery.client.lastname }}</td>
+                <td>{{ advertQuery.total }}</td>
+                <td>{{ advertQuery.stripePaymentMethode }}</td>
+                <td>
+                {% if  advertQuery.status==0 %} 
+                en attente 
+                {% endif %}
+                  {% if advertQuery.status==1 %} 
+                acceptée 
+                {% endif %}
+                  {% if  advertQuery.status==2 %} 
+                annulée 
+                {% endif %}
+                </td>
+                <td>
+  {% if  advertQuery.status==2 %} 
+    <button type="button" class="btn btn-primary" ddata-toggle="modal" data-target="#exampleModal-{{ key }}">
+  comission d'annulation
+</button>
+
+<div class="modal" id="exampleModal-{{ key }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Remboursement</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+         <table id="bagagiste" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>montant rembourder</th>
+                <th>montant transferer</th>
+                <th>stripe refund/transferer</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for logAdvert in advertQuery.logRefunds %}
+          <tr>
+                <td>{{ logAdvert.id }}</td>
+                <td>{{ logAdvert.montant }}</td>
+                <td>{{ logAdvert.montantTransferer }}</td>
+                <td>{{ logAdvert.refund }}/{{ logAdvert.transfert }}</td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        <tfoot>
+            <tr>
+                  <th>id</th>
+                <th>montant rembourder</th>
+                <th>montant transferer</th>
+                <th>stripe refund</th>
+
+            </tr>
+        </tfoot>
+    </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+            
+    {% endif %}
+                </td>
+            </tr>
+   {% endfor %}       
+        </tbody>
+        <tfoot>
+            <tr>
+                  <th>id</th>
+                <th>client</th>
+                <th>total</th>
+                <th>stripe_payment_intent</th>
+                <th>status</th>
+                                <th></th>
+
+            </tr>
+        </tfoot>
+    </table>

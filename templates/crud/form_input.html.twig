@@ -1,0 +1,111 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block title %}{{ 'title_dashboard'|trans({}, 'SonataAdminBundle') }}{% endblock %}
+{% block breadcrumb %}{% endblock %}
+{% block content %}
+    <div class="sticky-wrapper"><nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Edit "partenaire partenaire"</a>
+                </div>
+            </div>
+        </nav></div>
+    <section class="content">
+
+        <div class="sonata-ba-form">
+            <form id="form"  action="{{  path('stripe_image',{'id':id}) }}" method="POST">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box box-primary">
+                                    <div class="box-header">
+                                        <h4 class="box-title">
+                                            Partenaire
+                                        </h4>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="sonata-ba-collapsed-fields">
+
+                                            <div id="sonata-ba-field-container-s61eab9936e95c_email" class="form-group">
+
+                                                <label class="control-label required" for="s61eab9936e95c_email">Piece d'identité</label>
+
+                                                <div class="sonata-ba-field sonata-ba-field-standard-natural">
+                                                    <input type="file" id="photo" name="photo" required="required" class=" form-control">
+                                                    <input type="hidden" id="fileHidden1" name="fileHidden1" class=" form-control" value="">
+                                                </div>
+                                            </div>
+                                            <div id="sonata-ba-field-container-s61eab9936e95c_email" class="form-group">
+
+                                                <label class="control-label required" for="s61eab9936e95c_email">justificatif de domicile</label>
+
+                                                <div class="sonata-ba-field sonata-ba-field-standard-natural">
+                                                    <input type="file" id="adresse" name="adresse" required="required" class=" form-control">
+                                                    <input type="hidden" id="fileHidden2" name="fileHidden2" class=" form-control" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="sonata-ba-form-actions well well-small form-actions">
+                    <button type="submit" class="btn btn-success" name="btn_update_and_edit"><i class="fas fa-save" aria-hidden="true"></i> Update</button>
+                </div>
+            </form></div>
+    </section>
+    <script src="https://js.stripe.com/v3/"></script>
+
+
+    <script type="text/javascript">
+
+        const stripe = Stripe('pk_live_51Jm0pOIC3PjkyPuyFGyqbGSkF4jtyd9JBslQPc7Xv7BfuGAzdynCepoe74qxTNav2Y5vFxtImeccE46DOQ1RgoP600FbnTS9tn');
+        var myForm = document.getElementById('form');
+        myForm.addEventListener('submit', handleForm);
+
+        async function handleForm(event) {
+            event.preventDefault();
+            const data = new FormData();
+            data.append('file', document.querySelector('#photo').files[0]);
+            data.append('purpose', 'identity_document');
+            //data.append('file', document.querySelector('#adresse').files[0]);
+            //data.append('purpose', 'additional_verification');
+            const fileResult = await fetch('https://uploads.stripe.com/v1/files', {
+                method: 'POST',
+                headers: {'Authorization': 'Bearer pk_live_51Jm0pOIC3PjkyPuyFGyqbGSkF4jtyd9JBslQPc7Xv7BfuGAzdynCepoe74qxTNav2Y5vFxtImeccE46DOQ1RgoP600FbnTS9tn'},
+                body: data,
+            });
+            const fileData = await fileResult.json();
+           console.log(fileData);
+            $('#fileHidden1').val(fileData.id);
+            const data2 = new FormData();
+            data2.append('file', document.querySelector('#adresse').files[0]);
+            data2.append('purpose', 'additional_verification');
+            const fileResult2 = await fetch('https://uploads.stripe.com/v1/files', {
+                method: 'POST',
+                headers: {'Authorization': 'Bearer pk_live_51Jm0pOIC3PjkyPuyFGyqbGSkF4jtyd9JBslQPc7Xv7BfuGAzdynCepoe74qxTNav2Y5vFxtImeccE46DOQ1RgoP600FbnTS9tn'},
+                body: data2,
+            });
+            const fileData2 = await fileResult2.json();
+            console.log(fileData2);
+            $('#fileHidden2').val(fileData2.id);
+
+            $('#form').submit();
+
+        }
+
+
+
+
+
+
+
+
+    </script>
+{% endblock %}

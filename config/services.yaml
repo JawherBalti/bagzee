@@ -1,0 +1,286 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    app.assets.s3:
+        class: Aws\S3\S3Client
+        arguments:
+            -
+                version: 'latest'
+                region: '%env(assets_region)%'
+                credentials:
+                    key: '%env(assets_key)%'
+                    secret: '%env(assets_secret)%'
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+    admin.client:
+        class: App\Admin\ClientAdmin
+        arguments: [ ~, App\Entity\Client, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'client',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+    admin.ville:
+        class: App\Admin\VilleAdmin
+        arguments: [ ~, App\Entity\Ville, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'ville',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+    admin.contactNous:
+        class: App\Admin\ContactNousAdmin
+        arguments: [ ~, App\Entity\ContactNous, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Contactez-nous',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+    admin.blog:
+        class: App\Admin\BlogAdmin
+        arguments: [ ~, App\Entity\Blog, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Blog',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+    admin.stats:
+        class: App\Admin\StatsAdmin
+        arguments: [~, '', App\Controller\Admin\ProductStatisticsAdminController]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Stats, group: Administration }
+    admin.sponsorship:
+        class: App\Admin\SponsorshipAdmin
+        arguments: [ ~, App\Entity\Sponsorship, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Code promos',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+    admin.advert:
+        class: App\Admin\AdvertAdmin
+        arguments: [ ~, App\Entity\Advert, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Confier_offre',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+        calls:
+            - [setTemplate, ['edit','admin/advertEdit.html.twig']]
+    admin.baggagite:
+        class: App\Admin\BaggagiteAdmin
+        arguments: [ ~, App\Entity\Baggagite, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Porteur_offre',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: Administration
+            }
+        calls:
+            - [setTemplate, ['edit','admin/bagagisteEdit.html.twig']]
+    admin.seo:
+        class: App\Admin\SeoAdmin
+        arguments: [ ~, App\Entity\Seo, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'seo',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.PolitiqueConfidentialiteAdmin:
+        class: App\Admin\PolitiqueConfidentialiteAdmin
+        arguments: [ ~, App\Entity\PolitiqueConfidentialite, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Politique de confidentialité',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.PopupPubFront:
+        class: App\Admin\PopupPubFrontAdmin
+        arguments: [ ~, App\Entity\PopupPubFront, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Popup Pub Front',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.CodePromosSubscriptionAdmin:
+        class: App\Admin\CodePromosSubscriptionAdmin
+        arguments: [ ~, App\Entity\CodePromosSubscription, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'Code promo CE',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.CGUAdmin:
+        class: App\Admin\CGUAdmin
+        arguments: [ ~, App\Entity\CGU, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Conditions générales d'utilisation",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.CGVAdmin:
+        class: App\Admin\CGVAdmin
+        arguments: [ ~, App\Entity\CGV, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Conditions générales de vente",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.CookieAdmin:
+        class: App\Admin\CookieAdmin
+        arguments: [ ~, App\Entity\Cookies, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Cookies",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.FaqAdmin:
+        class: App\Admin\FaqAdmin
+        arguments: [ ~, App\Entity\Faq, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "faq",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.MentionLegalAdmin:
+        class: App\Admin\MentionLegalAdmin
+        arguments: [ ~, App\Entity\MentionLegal, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Mention légal",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.SettingSeoAdmin:
+        class: App\Admin\SettingSeoAdmin
+        arguments: [ ~, App\Entity\SettingSeo, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Setting Seo",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+    admin.SettingPriceAdmin:
+        class: App\Admin\SettingPriceAdmin
+        arguments: [ ~, App\Entity\SettingPrice, ~ ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: "Setting prix",
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: setting
+            }
+
+    
+    admin.smsClient:
+        class: App\Admin\SmsAdmin
+        arguments: [~, '', App\Controller\Admin\SmsStatisticsAdminController]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'historique',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: sms
+            }
+    
+    admin.emailClient:
+        class: App\Admin\EmailClientAdmin
+        arguments: [ ~, '', App\Controller\Admin\EmailClientStatisticsAdminController ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'historique',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: email
+            }
+    admin.push:
+        class: App\Admin\PushAdmin
+        arguments: [ ~, '', App\Controller\Admin\PushAdminController ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'historique',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: push
+            }
+    admin.pushRecurente:
+        class: App\Admin\PushRecurenteAdmin
+        arguments: [ ~, '', App\Controller\Admin\PushRecurenteAdminController ]
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                label: 'historique',
+                icon: '<i class="fa fa-file-alt"></i>',
+                group: pushRecurente
+            }
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones

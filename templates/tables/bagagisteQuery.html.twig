@@ -1,0 +1,98 @@
+ <table id="bagagiste" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>client</th>
+                <th>total</th>
+                <th>stripe_payment_intent</th>
+                <th>status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+{% for key,baggisteQuery in baggisteQuery %}
+            <tr>
+                <td><a href="">{{ baggisteQuery.id }}</a></td>
+                <td>{{ baggisteQuery.client.firstname }} {{ baggisteQuery.client.lastname }}</td>
+                <td>{{ baggisteQuery.total }}</td>
+                <td>{{ baggisteQuery.stripePaymentMethode }}</td>
+                <td>
+                {% if  baggisteQuery.status==0 %} 
+                en attente 
+                {% endif %}
+                  {% if baggisteQuery.status==1 %} 
+                acceptée 
+                {% endif %}
+                  {% if  baggisteQuery.status==2 %} 
+                annulée 
+                {% endif %}
+                </td>
+                <td>
+{% if  baggisteQuery.status==2 %} 
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalBag-{{ key }}">
+  comission d'annulation
+</button>
+
+<div class="modal" id="exampleModalBag-{{ key }}" tabindex="-1" aria-labelledby="exampleModalBagLabel-{{ key }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalBagLabel-{{ key }}">Remboursement</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+         <table id="bagagiste" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>montant rembourder</th>
+                <th>montant transferer</th>
+                <th>stripe refund/transferer</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for logBag in baggisteQuery.logRefunds %}
+          <tr>
+                <td>{{ logBag.id }}</td>
+                <td>{{ logBag.montant }}</td>
+                <td>{{ logBag.montantTransferer }}</td>
+                <td>{{ logBag.refund }}/{{ logBag.transfert }}</td>
+            </tr>
+        {% endfor %}
+          </tbody>
+        <tfoot>
+            <tr>
+                  <th>id</th>
+                <th>montant rembourder</th>
+                <th>montant transferer</th>
+                <th>stripe refund</th>
+
+            </tr>
+        </tfoot>
+    </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+            
+    {% endif %}
+                </td>
+            </tr>
+   {% endfor %}       
+        </tbody>
+        <tfoot>
+            <tr>
+                  <th>id</th>
+                <th>client</th>
+                <th>total</th>
+                <th>stripe_payment_intent</th>
+                <th>status</th>
+                                <th></th>
+
+            </tr>
+        </tfoot>
+    </table>

@@ -1,0 +1,259 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% block content %}
+<div class="row">
+    <form method="post" action="">
+    <div class="col-lg-3">
+        <div class="input-group" data-provide="">
+            <input value="{{ start|date('Y-m-d') }}" type="date" name="start" class="form-control" style="width: 250px" id="start" width="276" />
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="input-group" data-provide="">
+            <input value="{{ end|date('Y-m-d') }}" name="end" type="date"  class="form-control" style="width: 250px" id="end" width="276" />
+        </div>
+    </div>
+     <div class="col-lg-3">
+        <select name="role" class="form-control">
+            <option value="tout" {% if role=="tout"%} selected {% endif %} >Tout</option>
+            <option value="porteur" {% if role=="porteur"%} selected {% endif %}>Porteur</option>
+            <option value="proprietaire" {% if role=="proprietaire"%} selected {% endif %}>Propriétaire</option>
+        </select>
+    </div>
+    <div class="col-lg-3">
+        <button onClick="checkDate(event)" type="submit" class="btn btn-sm btn-primary">
+            <span class="glyphicon glyphicon-search"></span>
+        </button>
+    </div>
+    </form>
+</div>
+    </br>
+
+
+   <div class="row">
+        <div class="col-lg-3 col-6">
+                 <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>{{ numberOfclient }}</h3>
+                    <p>Nombre client</p>
+                </div>
+                <div class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+                 <div class="small-box bg-blue">
+                <div class="inner">
+                    <h3>{{ numberOfadvert }}</h3>
+                    <p>Nombre des annonces</p>
+                </div>
+                <div class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+                 <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>{{ numberOfbagagiste }}</h3>
+                    <p>Nombre des bagagistes</p>
+                </div>
+                <div class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+                 <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>{{ numberOfadvertQuery+numberOfBaggisteQuery }}</h3>
+                    <p>Nombre des reservations</p>
+                </div>
+                <div class="icon">
+                    <i class="glyphicon glyphicon-user"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+   </div>
+
+   <div class="row">
+        <div class="col-lg-6 col-6">
+            <table id="advert" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>adress_point_depart</th>
+                <th>adress_point_arrivee</th>
+                <th>type_adress_depart</th>
+                <th>type_adresse_arrivee</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+{% for key,advert in adverts %}
+            <tr>
+                <td><a href="">{{ advert.id }}</a></td>
+                <td>{{ advert.adressPointDepart }}</td>
+                <td>{{ advert.adressPointArrivee }}</td>
+                <td>{{ advert.typeAdressDepart }}</td>
+                <td>{{ advert.typeAdresseArrivee  }}</td>
+                <td>
+                        <button onclick="getAdvertQueryByAdvert('{{advert.id}}')" type="button" class="btn btn-primary"><i class="fa fa-list"></i></button>
+
+                </td>
+            </tr>
+   {% endfor %}       
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>id</th>
+                <th>adress_point_depart</th>
+                <th>adress_point_arrivee</th>
+                <th>type_adress_depart</th>
+                <th>type_adresse_arrivee</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+        </div>
+        <div class="col-lg-6 col-6">
+
+          <table id="bagagiste" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>adress_point_depart</th>
+                <th>adress_point_arrivee</th>
+                <th>type_adress_depart</th>
+                <th>type_adresse_arrivee</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+{% for key,baggagiste in baggagistes %}
+            <tr>
+                <td><a href="">{{ baggagiste.id }}</a></td>
+                <td>{{ baggagiste.adressePointDepart }}</td>
+                <td>{{ baggagiste.adressePointArrivee }}</td>
+                <td>{{ baggagiste.typeAdresseDepart }}</td>
+                <td>{{ baggagiste.typeAdresseArrivee }}</td>
+                <td>
+                        <button onclick="getBaggagisteQueryByBaggagist('{{baggagiste.id}}')" type="button" class="btn btn-primary"><i class="fa fa-list"></i></button>
+
+                </td>
+            </tr>
+   {% endfor %}       
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>id</th>
+                <th>adress_point_depart</th>
+                <th>adress_point_arrivee</th>
+                <th>type_adress_depart</th>
+                <th>type_adresse_arrivee</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+        </div>
+   </div>
+
+
+    <div class="row">
+        <div class="col-lg-6 col-6">
+            <div id="advertQuery">
+            </div>
+        </div>
+        <div class="col-lg-6 col-6">
+
+           <div id="baggagisteQuery">
+            </div>
+        </div>
+   </div>
+   
+          <div id="msg" style="color:red"/>
+
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+   <script type="text/javascript">
+         $(document).ready(function () {
+        
+
+    $('#advert').DataTable({"language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            }});
+
+              $('#bagagiste').DataTable({"language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/French.json"
+            }});
+});
+   </script>
+
+
+   <script type="text/javascript">
+
+   function getAdvertQueryByAdvert(id)
+   {
+    var getUrl = window.location;
+            var baseUrl = getUrl .protocol + "//" + getUrl.host;
+            $.ajax({
+                url: baseUrl + '/admin/product-statistics/advertQuery',
+                method: 'POST',
+                data: {id:id},
+                success: function (response) {
+                
+      $('#advertQuery').html(response);
+
+
+                }
+            });
+   }
+
+   function getBaggagisteQueryByBaggagist(id)
+   {
+ var getUrl = window.location;
+            var baseUrl = getUrl .protocol + "//" + getUrl.host;
+            $.ajax({
+                url: baseUrl + '/admin/product-statistics/bagagisteQuery',
+                method: 'POST',
+                data: {id:id},
+                success: function (response) {
+               
+      $('#baggagisteQuery').html(response);
+
+                }
+            });
+   }
+
+  
+   function checkDate(e)
+   {
+   console.log(formarDate($('#start').val()));
+   var start=new Date(formarDate($('#start').val()));
+   var end=new Date(formarDate($('#end').val()));
+   if(start.getTime()>end.getTime())
+   {
+   $('#msg').html('véréfier les choix de la dates');
+      e.preventDefault();
+   }
+   else
+   {
+      $('#msg').html('');
+
+   }
+   }
+
+    function formarDate(date)
+        {
+        return date.split('-')[0]+'-'+date.split('-')[1]+'-'+date.split('-')[2];
+        }
+   </script>
+{% endblock %}

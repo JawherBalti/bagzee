@@ -1,0 +1,95 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active">
+                    <a href="#tab_s61f41facf1fac_73804619_1" class="changer-tab"
+                       aria-controls="tab_s61f41facf1fac_73804619_1" data-toggle="tab" aria-expanded="true">
+                        <i class="fa fa-exclamation-circle has-errors hide" aria-hidden="true"></i>
+                        pour un client
+                    </a>
+                </li>
+                <li class="">
+                    <a href="#tab_s61f41facf1fac_73804619_2" class="changer-tab"
+                       aria-controls="tab_s61f41facf1fac_73804619_2" data-toggle="tab" aria-expanded="false">
+                        <i class="fa fa-exclamation-circle has-errors hide" aria-hidden="true"></i>
+                        Tout
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="tab_s61f41facf1fac_73804619_1">
+                    <div class="box-body  container-fluid">
+                        <div class="sonata-ba-collapsed-fields">
+                            <form method="post" action="{{ path('emailClientStatistics_create') }}">
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="client">Client</label>
+                                        <select id="search" multiple="true" name="client[]">
+                                            {% for client in clients %}
+                                                <option value="{{ client.email }}">
+                                                    {{ client.firstname }}-{{ client.lastname }}-{{ client.email }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label for="client">Objet</label>
+                                        <input type="text" class="form-control" name="object" required />
+
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label for="client">message</label>
+                                        <textarea class="form-control" name="message" rows="4" cols="50"></textarea>
+                                        <input type="hidden" name="type" value="single"/>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">valider</button>
+                                    <button type="cancel" class="btn btn-secondary">annuler</button>
+
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab_s61f41facf1fac_73804619_2">
+                    <div class="box-body  container-fluid">
+                        <div class="sonata-ba-collapsed-fields">
+                            <form method="post" action="">
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="hidden" name="type" value="all"/>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label for="client">Objet</label>
+                                        <input type="text" name="object" required class="form-control"/>
+
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label for="client">message</label>
+                                        <textarea class="form-control" name="message" rows="4" cols="50"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">valider</button>
+                                    <button type="cancel" class="btn btn-secondary">annuler</button>
+
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script type="text/javascript">
+        </script>
+        {% endblock %}

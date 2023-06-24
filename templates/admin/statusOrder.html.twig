@@ -1,0 +1,12 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+{% block field %}
+    {% if object.status==-1 %} <span class="badge badge-primary">annulé</span> {% endif %}
+    {% if object.status==1 %} <span class="badge badge-primary">  en attente</span> {% endif %}
+    {% if object.status==2 %} <span class="badge badge-primary"> non confirmé</span> {% endif %}
+    {% if object.status==3 %} <span class="badge badge-primary"> annulé</span> {% endif %}
+    {% if object.status==5 %} <span class="badge badge-primary"> non confirmé</span> {% endif %}
+    {% if object.status==6 and object.activity.date|date('Y-m-d')  <  'now'|date('Y-m-d') %} <span class="badge badge-primary"> realisé</span> {% endif %}
+    {% if object.status==6 and object.activity.date|date('Y-m-d') ==  'now'|date('Y-m-d') and object.activity.hTo|date('H:i') < 'now'|date('H:i') %} <span class="badge badge-primary"> realisé</span> {% endif %}
+    {% if object.status==6 and object.activity.date|date('Y-m-d') ==  'now'|date('Y-m-d') and object.activity.hTo|date('H:i') >= 'now'|date('H:i') %} <span class="badge badge-primary"> confirmé</span> {% endif %}
+    {% if object.status==6 and object.activity.date|date('Y-m-d') > 'now'|date('Y-m-d') %} <span class="badge badge-primary"> confirmé</span> {% endif %}
+{% endblock %}

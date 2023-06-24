@@ -1,0 +1,7 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+{% block field %}
+{% if object.photo is not null %}
+    <img width="71px" src="{{ asset('uploads/'~object.photo) }}"/>
+{% endif %}
+
+{% endblock %}

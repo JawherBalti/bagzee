@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script> window.prerenderReady = false; 
+
+setTimeout(function test(){window.prerenderReady =true}, 4000);
+</script>    <meta charset="UTF-8">
+  
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+    <!--<meta name="fragment" content="!" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-title" content="Bagzee">
+    <meta name="application-name" content="Bagzee">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="/images/favicons/apple-touch-icon.png">
+    <link rel="icon" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+    <link rel="icon" sizes="16x16" href="/images/favicons/favicon-16x16.png">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QSQ2QQESHS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-QSQ2QQESHS');
+    </script>
+    
+</head>
+<body>
+{# <nav
+            class="navbar navbar-expand-lg navbar-light bg-light"
+            style="height: 70px;"
+    >
+        <a class="navbar-brand" href="#">Symfony</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if app.user %}
+                <li><a class="nav-link" href="{{ path('list') }}">View List</a></li>
+                <li><a class="nav-link" href="{{ path('app_logout') }}">Logout</a></li>
+
+            {% else %}
+
+
+                <li><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
+                <li>
+                    <a class="nav-link" href="{{ path('registration') }}">Register</a>
+                </li>
+
+            {% endif %}
+        </ul>
+    </nav> #}
+
+{% block body %}{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+</body>
+</html>
