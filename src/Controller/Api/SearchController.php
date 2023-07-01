@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Repository\ClientRepository;
 use App\Repository\AdvertRepository;
 use App\Repository\AvisRepository;
+use App\Repository\FavorisRepository;
 use App\Repository\BaggagiteRepository;
 
 /**
@@ -22,13 +23,15 @@ class SearchController extends AbstractController
     /**
      * @Route("/list", name="search_list", methods={"POST"})
      */
-    public function search_list(ManagerRegistry $doctrine, Request $request, ClientRepository $clientRepo, AdvertRepository $advertRepo, AvisRepository $avisRepository, BaggagiteRepository $baggagiteRepository): Response
+    public function search_list(ManagerRegistry $doctrine, Request $request, ClientRepository $clientRepo, AdvertRepository $advertRepo, AvisRepository $avisRepository, BaggagiteRepository $baggagiteRepository,FavorisRepository $favorisRepository): Response
     {
         $tabAdvert = [];
         $gallery = [];
+        $hasClient=null;
         $data = json_decode($request->getContent(), true);
-        /*$hasClient=$clientRepo->findOneBy(['token'=>$data['token']]);
-        if(!$hasClient)
+        if(isset($data['token']))
+       $hasClient=$clientRepo->findOneBy(['token'=>$data['token']]);
+        /* if(!$hasClient)
        {
            $status=false;
            $message='Vous devez vous connecter';
@@ -56,9 +59,10 @@ class SearchController extends AbstractController
 
         }
 
-
+ 
         if ($annonces) {
             foreach ($annonces as $key => $annonce) {
+                 $isfavoris=false;
                 if (!is_null($annonce->getClient())) {
                     $objectClient = [
                         'id' => $annonce->getClient()->getId(),
@@ -76,13 +80,16 @@ class SearchController extends AbstractController
                     ];
                 }
                 if ($data['type'] == 1) {
-                    $avis = $avisRepository->nbreavisbyClient([$annonce->getClient()->getId()]);
+                    if($hasClient)
+                   $isfavoris= $favorisRepository->findOneBy(['client'=>$hasClient,'baggagist'=>$annonce])?true:false;
+                    $avis = $avisRepository->nbreClientnoted([$annonce->getClient()->getId()]);
                     $listeContenu = [];
 
                 } else {
                     $listeContenu = $annonce->getObjectContenu();
-
-                    $avis = $avisRepository->nbreavisbyClient([$annonce->getClient()->getId()]);
+    if($hasClient)
+                   $isfavoris= $favorisRepository->findOneBy(['client'=>$hasClient,'advert'=>$annonce])?true:false;
+                    $avis = $avisRepository->nbreClientnoted([$annonce->getClient()->getId()]);
                     $galleries = $annonce->getImages();
                     $gallery = [];
                     if (count($galleries) > 0) {
@@ -99,44 +106,43 @@ class SearchController extends AbstractController
                 }
 
 
-                if(strtotime(date_format($annonce->getDateFrom(), 'd-m-Y').' '.date_format($annonce->getTimeFrom(), 'H:i'))>=strtotime(date_format(new \DateTime(), 'd-m-Y H:i')))
-                {
+                if (strtotime(date_format($annonce->getDateFrom(), 'd-m-Y') . ' ' . date_format($annonce->getTimeFrom(), 'H:i')) >= strtotime(date_format(new \DateTime(), 'd-m-Y H:i'))) {
                     $tabAdvert[] = [
-                    'id' => $annonce->getId(),
-                    'status' => $annonce->getStatus(),
-                    'dimensionsLarg' => $annonce->getDimension()->getWidth(),
-                    'dimensionsH' => $annonce->getDimension()->getHeight(),
-                    'dimensionsLong' => $annonce->getDimension()->getLength(),
-                    'dimensionsKg' => $annonce->getDimension()->getWeight(),
-                    'ville_depart' => ($data['type'] == 2) ? $annonce->getFromAdress() : $annonce->getAdressFrom(),
-                    'ville_arrivee' => ($data['type'] == 2) ? $annonce->getToAdress() : $annonce->getAdressTo(),
-                    'description' => ($data['type'] == 2) ? $annonce->getDescription() : '',
-                    'objectType' => implode(",", $annonce->getObjectType()),
-                    'objectTransport' => implode(",", $annonce->getObjectTransport()),
-                    'objectRelaisDepart' => ($data['type'] == 2) ? $annonce->getobjectRelaisDepart() : [],
-                    'objectRelaisArriv' => ($data['type'] == 2) ? $annonce->getobjectRelaisArriv() : [],
-                    'dateDepart' => date_format($annonce->getDateFrom(), 'd-m-Y'),
-                    'dateArrivee' => date_format($annonce->getDateTo(), 'd-m-Y'),
-                    'heureDepart' => date_format($annonce->getTimeFrom(), 'H:i'),
-                    'heureArrivee' => date_format($annonce->getTimeTo(), 'H:i'),
-                    'listeContenu' => $listeContenu,
-                    'infoAvis' => ['nbrAvis' => floatval($avis['nbrAvis']),
-                        'total' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4],
-                    'price' => ($data['type'] == 2) ? $annonce->getPrice() : '',
-                    'priceNet' => ($data['type'] == 2) ? $annonce->getPriceNet() : '',
-                    'type_adresse_arrivee' => $annonce->getTypeAdresseArrivee(),
-                    'type_adresse_depart' => ($data['type'] == 2) ? $annonce->getTypeAdressDepart() : $annonce->getTypeAdresseDepart(),
-                    'client' => $objectClient,
-                    'commentaire' => ($data['type'] == 1) ? $annonce->getCommentaire() : '',
-                    'contenuRefuse' => ($data['type'] == 1) ? $annonce->getContenuRefuse() : '',
-                    'isFavoris' => false,
-                    'gallery' => $gallery
-                ];
+                        'id' => $annonce->getId(),
+                        'status' => $annonce->getStatus(),
+                        'dimensionsLarg' => $annonce->getDimension()->getWidth(),
+                        'dimensionsH' => $annonce->getDimension()->getHeight(),
+                        'dimensionsLong' => $annonce->getDimension()->getLength(),
+                        'dimensionsKg' => $annonce->getDimension()->getWeight(),
+                        'ville_depart' => ($data['type'] == 2) ? $annonce->getFromAdress() : $annonce->getAdressFrom(),
+                        'ville_arrivee' => ($data['type'] == 2) ? $annonce->getToAdress() : $annonce->getAdressTo(),
+                        'description' => ($data['type'] == 2) ? $annonce->getDescription() : '',
+                        'objectType' => implode(",", $annonce->getObjectType()),
+                        'objectTransport' => implode(",", $annonce->getObjectTransport()),
+                        'objectRelaisDepart' => ($data['type'] == 2) ? $annonce->getobjectRelaisDepart() : [],
+                        'objectRelaisArriv' => ($data['type'] == 2) ? $annonce->getobjectRelaisArriv() : [],
+                        'dateDepart' => date_format($annonce->getDateFrom(), 'd-m-Y'),
+                        'dateArrivee' => date_format($annonce->getDateTo(), 'd-m-Y'),
+                        'heureDepart' => date_format($annonce->getTimeFrom(), 'H:i'),
+                        'heureArrivee' => date_format($annonce->getTimeTo(), 'H:i'),
+                        'listeContenu' => $listeContenu,
+                        'infoAvis' => [
+                            'nbrAvis' => floatval($avis['nbrAvis']),
+                            'total' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1)
+                        ],
+                        'price' => ($data['type'] == 2) ? $annonce->getPrice() : '',
+                        'priceNet' => ($data['type'] == 2) ? $annonce->getPriceNet() : '',
+                        'type_adresse_arrivee' => $annonce->getTypeAdresseArrivee(),
+                        'type_adresse_depart' => ($data['type'] == 2) ? $annonce->getTypeAdressDepart() : $annonce->getTypeAdresseDepart(),
+                        'client' => $objectClient,
+                        'commentaire' => ($data['type'] == 1) ? $annonce->getCommentaire() : '',
+                        'contenuRefuse' => ($data['type'] == 1) ? $annonce->getContenuRefuse() : '',
+                        'isFavoris' => $isfavoris,
+                        'gallery' => $gallery
+                    ];
                 }
 
 
-
-                
             }
         }
 
