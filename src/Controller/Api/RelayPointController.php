@@ -291,7 +291,7 @@ class RelayPointController extends AbstractController
                                 'firstName' => $advertQuery->getClient()->getFirstname(),
                                 'lastName' => $advertQuery->getClient()->getLastname(),
                                 'nbrAvis' => floatval($avis['nbrAvis']),
-                                'totalAvis' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,
+                                'totalAvis' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1),
                             ];
                            
 $proprietaire=[

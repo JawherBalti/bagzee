@@ -303,7 +303,7 @@ class ConfierBagage extends Component {
                         placeholder={t("page_home.ville_depart")}
                         apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
                         options={{
-                          strictBounds: true,
+                          types: ["locality"],
                           componentRestrictions: { country: "fr" },
                         }}
                         onPlaceSelected={(place) => {
@@ -327,7 +327,7 @@ class ConfierBagage extends Component {
                         placeholder={t("page_home.ville_arrivee")}
                         apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
                         options={{
-                          strictBounds: true,
+                          types: ["locality"],
                           componentRestrictions: { country: "fr" },
                         }}
                         onPlaceSelected={(place) => {

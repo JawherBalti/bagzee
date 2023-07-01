@@ -405,10 +405,12 @@ class ProfilController extends AbstractController
             $adverts = $advertRepository->findBy(['client' => $hasClient, 'status' => $myStatus], ['id' => 'desc']);
 
             if ($adverts) {
-                foreach ($adverts as $key => $advert) {
+                  foreach ($adverts as $key => $advert) {
+                     // $avis = $avisRepository->nbreavisbyClient([$annonce->getClient()->getId()]);
 
                     $tabAdverts[] = [
                         'id' => $advert->getId(),
+                        'status' => $advert->getStatus(),
                         'dimensionsLarg' => $advert->getDimension()->getWidth(),
                         'dimensionsH' => $advert->getDimension()->getHeight(),
                         'dimensionsLong' => $advert->getDimension()->getLength(),
@@ -422,16 +424,18 @@ class ProfilController extends AbstractController
                         'dateArrivee' => date_format($advert->getDateTo(), 'd-m-Y'),
                         'heureDepart' => date_format($advert->getTimeFrom(), 'H:i'),
                         'heureArrivee' => date_format($advert->getTimeTo(), 'H:i'),
-                        'status' => $advert->getStatus(),
                         'listeContenu' => $advert->getObjectContenu(),
+
                         'price' => $advert->getPrice(),
+
                         'adresse_point_depart' => $advert->getAdressPointDepart(),
                         'adresse_point_arrivee' => $advert->getAdressPointArrivee(),
                         'type_adresse_arrivee' => $advert->getTypeAdresseArrivee(),
                         'type_adresse_depart' => $advert->getTypeAdressDepart(),
                         'hasDemande' => count($advert->getAdvertQueries()) > 0 ? true : false,
-                        'canDepose' => $advert->isCanDepose()
-                    ];
+                        'canDepose' => $advert->isCanDepose(),
+
+ ];
                 }
             }
             $status = true;
@@ -461,7 +465,18 @@ class ProfilController extends AbstractController
             $adverts = $advertRepository->findBy(['client' => $hasClient, 'status' => $myStatus], ['id' => 'desc']);
             if ($adverts) {
                 foreach ($adverts as $key => $advert) {
-
+                    $galleries = $advert->getImages();
+                    $gallery = [];
+                    if (count($galleries) > 0) {
+                        foreach ($galleries as $key => $gallerie) {
+                            $gallery[] = [
+                                'id' => $gallerie->getId(),
+                                'url' => $gallerie->getUrl(),
+                                'uid' => $gallerie->getId(),
+                                'status' => 'done'
+                            ];
+                        }
+                    }
                     $tabAdverts[] = [
                         'id' => $advert->getId(),
                         'dimensionsLarg' => $advert->getDimension()->getWidth(),
@@ -485,6 +500,10 @@ class ProfilController extends AbstractController
                         'type_adresse_arrivee' => $advert->getTypeAdresseArrivee(),
                         'type_adresse_depart' => $advert->getTypeAdressDepart(),
                         'hasDemande' => count($advert->getAdvertQueries()) > 0 ? true : false,
+                        'objectRelaisDepart' => $advert->getobjectRelaisDepart(),
+                        'objectRelaisArriv' => $advert->getobjectRelaisArriv(),
+                        'priceNet' => $advert->getPriceNet(),
+                        'gallery' => $gallery,
                         'canDepose' => $advert->isCanDepose()
                     ];
                 }
@@ -602,7 +621,7 @@ class ProfilController extends AbstractController
                                 'email' => $advertQueries->getClient()->getEmail(),
                                 'lastName' => $advertQueries->getClient()->getLastname(),
                                 'nbrAvis' => floatval($avis['nbrAvis']),
-                                'totalAvis' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,
+                                'totalAvis' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1),
                                 'price_porteur' => $advertQueries->getPrice(),
                                 'isValid' => $advertQueries->getIsValid(),
                                 'isPaied' => $advertQueries->getIsPaied(),
@@ -891,7 +910,7 @@ class ProfilController extends AbstractController
                     'email' => $baggagistesQuery->getBaggagite()->getClient()->getEmail(),
                     'lastName' => $baggagistesQuery->getBaggagite()->getClient()->getLastname(),
                     'nbrAvis' => floatval($avis['nbrAvis']),
-                    'totalAvis' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,
+                    'totalAvis' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1),
                     'price_porteur' => $baggagistesQuery->getTotal(),
                     'priceNet' => $baggagistesQuery->getPrixNet()?$baggagistesQuery->getPrixNet():30,
                 ];
@@ -1007,7 +1026,7 @@ class ProfilController extends AbstractController
                     'lastName' => $advertQuery->getAdvert()->getClient()->getLastname(),
                     'nbrAvis' => floatval($avis['nbrAvis']),
                     'priceNet' => $advertQuery->getAdvert()->getPriceNet()?$advertQuery->getAdvert()->getPriceNet():30,
-                    'totalAvis' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,
+                    'totalAvis' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1),
                     'price_porteur' => $advertQuery->getPrice(),
                     'objectRelaisDepart' => $advertQuery->getobjectRelaisDepart(),
                     'objectRelaisArriv' => $advertQuery->getobjectRelaisArriv(),
@@ -1240,7 +1259,7 @@ class ProfilController extends AbstractController
                             'lastName' => $baggisteQuery->getClient()->getLastname(),
                             'email' => $baggisteQuery->getClient()->getEmail(),
                             'nbrAvis' => floatval($avis['nbrAvis']),
-                            'totalAvis' => ($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,
+                            'totalAvis' => number_format(($avis['etatBagage'] + $avis['respectSecurite'] + $avis['ponctualite'] + $avis['courtoisie']) / 4,1),
                             'price_porteur' => $baggisteQuery->getPrix(),
                             'priceNet' => $baggisteQuery->getPrixNet(),
                             'gallery' => $gallery,

@@ -10,23 +10,10 @@ class Faqs extends Component {
     constructor() {
         super();
         this.state = {
-            faq: [
-                {
-                    "id": 3,
-                    "question": "question 2",
-                    "reponse": "<p>reponse 2</p>"
-                },
-                {
-                    "id": 2,
-                    "question": "question",
-                    "reponse": "<p>reponse</p>"
-                }
-            ],
-
             faqData1: {
                 title: '',
                 rows: [
-                   /* {
+                    /*{
                         "title": "Comment envoyer un bagage en train (SNCF) ?",
                         "content": "Pour envoyer et faire livrer ton bagage à domicile ou en point relais, utilise Bagzee, l'application de cobagage qui permet de ne pas payer de supplément bagage en prenant le train, l'avion, le car ou le bateau ! Au lieu de payer un excédent pour ta valise en soute, en cabine ou tes objets hors formats, confies-les à un autre voyageur qui fait le même trajet en voiture, en train, en car, en bateau ou même en avion !\n" +
                             " 1. Envoie tes valises\n" +
@@ -120,12 +107,12 @@ class Faqs extends Component {
                             "Tu peux suivre les étapes d’acheminement de tes valises depuis l'application."
                     }, {
                         "title": "Qu'est ce que le cobagage ?",
-                        "content": "Le cobagage, c'est comme le covoiturage, ça fonctionne sur la base de l'économie de partage et de la livraison collaborative entre particuliers. Si tu voyage et que tu part en vacance, il te suffit d'aller sur le site ou l'app de Bagzee, de déposer ou chercher une annonce qui correspond à ton itinéraire et c'est bon ! Tu fera des économies en ne passant pas par les services payants de supplément bagage des compagnies de transport en commun et tu ne sera pas encombré tout au long de ton trajet."
+                        "content": "<h1>Le cobagage, c'est comme le covoiturage, ça fonctionne sur la base de l'économie de partage et de la livraison collaborative entre particuliers. Si tu voyage et que tu part en vacance, il te suffit d'aller sur le site ou l'app de Bagzee, de déposer ou chercher une annonce qui correspond à ton itinéraire et c'est bon ! Tu fera des économies en ne passant pas par les services payants de supplément bagage des compagnies de transport en commun et tu ne sera pas encombré tout au long de ton trajet.</h1>"
 
                     }*/
                 ]
 
-            }, loading1: true, loading2: true
+            }, loading1: false, loading2: false
         }
         console.log(this.state.faq)
     }
@@ -168,10 +155,14 @@ class Faqs extends Component {
                 }
 
             }else{
+                let myTab1 = []
+                res.data.faq.map((item,key) => {
+                    myTab1.push({title: item.question, content: item.reponse})
+                })
                 this.setState(prev => ({
                     faqData1: {
                         ...prev.faqData1,
-                        rows: res.data.faq
+                        rows:myTab1
                     }
                 }), () => {
                     console.log(this.state.faqData1)
@@ -226,18 +217,18 @@ class Faqs extends Component {
                             </span>
                             </p>
                             : <div className={"row mt-5 mb-3"}>
-                                <div className={"col-md-6 p-4"}>
+                                {this.state.faqData1.rows.length?<div className={"col-md-6 p-4"}>
                                     {/*<h6>Qui somme nous?</h6>*/}
                                   <Faq data={this.state.faqData1}
                                           dangerouslySetInnerHTML={{__html: this.state.faqData1}}/>
 
-                                </div>
-                                <div className={"col-md-6 p-4"}>
+                                </div>:null}
+                                {this.state.faqData2.rows.length?<div className={"col-md-6 p-4"}>
                                     {/*<h6>Qui somme nous?</h6>*/}
                                     <Faq data={this.state.faqData2}
-                                          dangerouslySetInnerHTML={{__html: this.state.faqData2}}/>
+                                         dangerouslySetInnerHTML={{__html: this.state.faqData2}}/>
 
-                                </div>
+                                </div>:null}
                             </div>}
                     </div>
                 </div>

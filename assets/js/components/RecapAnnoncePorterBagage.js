@@ -146,7 +146,7 @@ class RecapAnnoncePorterBagage extends Component {
             }
         })
 
-        axios.post('api/address/list', {token: user.client?.token}).then(res => {
+        axios.post('api/address/list', {token: user?.client?.token}).then(res => {
             if (res.data.status) {
                 this.setState(prevState => ({
                         depart: {
