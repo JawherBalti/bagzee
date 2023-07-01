@@ -1220,7 +1220,7 @@ class Annonces extends Component {
                     </label>
                     <DatePicker
                       locale={locale}
-                      format={"DD/MM/YYYY"}
+                      format={"DD-MM-YYYY"}
                       style={{ width: "auto" }}
                       onChange={(date, dateString) => {
                         console.log(date, dateString);
@@ -2938,7 +2938,23 @@ class Annonces extends Component {
                                           {t("page_annonce.listeDemandes")}
                                         </Link>
                                       </p>
-                                    ) : null}
+                                    ) :  <button
+                                        className={"btnBlue myAltBtn"}
+                                        onClick={() => {
+                                          this.setState(
+                                              {
+                                                redirect: "modifier",
+                                                orderId: order.id,
+                                              },
+                                              () => {
+                                                window.location.reload(false);
+                                              }
+                                          );
+                                        }}
+                                    >
+                                      {t("btns.modifier")}
+                                    </button>
+                                     }
                                     <br />
                                     {order.status == 4 ? (
                                       <button
