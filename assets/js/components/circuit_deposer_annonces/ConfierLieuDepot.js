@@ -148,111 +148,9 @@ class ConfierLieuDepot extends Component {
                 }))
             }
         })
-        if (this.props.location.state) {
-            axios.get('api/advert/get/' + this.props.location.state.id).then(res => {
-                console.log(res.data)
-                let advert = res.data.advert
-                let placeholderdepart = advert.type_adresse_depart == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
-                    advert.type_adresse_depart == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
-                        advert.type_adresse_depart == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
-                            advert.type_adresse_depart == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
-                let placeholderarrivee = advert.type_adresse_arrivee == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
-                    advert.type_adresse_arrivee == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
-                        advert.type_adresse_arrivee == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
-                            advert.type_adresse_arrivee == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
-                this.setState(prevState => ({
-                        idPointRelaisDep: advert.idPointRelaisDep,
-                        idPointRelaisArr: advert.idPointRelaisArr,
-                        adresse_point_depart: advert.adresse_point_depart,
-                        lat_adresse_point_depart: advert.lat_adresse_point_depart,
-                        long_adresse_point_depart: advert.long_adresse_point_depart,
-                        adresse_point_arrivee: advert.adresse_point_arrivee,
-                        lat_adresse_point_arrivee: advert.lat_adresse_point_arrivee,
-                        long_adresse_point_arrivee: advert.long_adresse_point_arrivee,
-                        price: advert.price,
-                        newprice: advert.price,
-                        listeContenu: advert.listeContenu,
-                        depart: {
-                            ...prevState.depart,    // keep all other key-value pairs
-                            ville_depart: advert.ville_depart,
-                            heure: advert.heureDepart,
-                            date: advert.dateDepart,
-                            nomEntreprise: advert.type_adresse_depart == "Point relais" && advert.nomEntrepriseDep,
-                            isPointRelais: advert.type_adresse_depart == "Point relais" ? true : false,
-                            isDomicile: advert.type_adresse_depart == "Domicile" ? true : false,
-                            isAutre: advert.type_adresse_depart == "Autre lieux" ? true : false,
-                            isIndifferent: advert.type_adresse_depart == "Indifferent" ? true : false,
-                            placeHolderSelect: placeholderdepart,
-                        },
-                        settingPriceDep: advert.settingPriceDep.length ? advert.settingPriceDep : this.state.settingPriceDep,
-                        settingPriceArr: advert.settingPriceArr.length ? advert.settingPriceArr : this.state.settingPriceArr,
-                        arrivee: {
-                            ...prevState.arrivee,    // keep all other key-value pairs
-                            ville_arrivee: advert.ville_arrivee,
-                            heure: advert.heureArrivee,
-                            date: advert.dateArrivee,
-                            nomEntreprise: advert.type_adresse_arrivee == "Point relais" && advert.nomEntrepriseArr,
-                            isPointRelais: advert.type_adresse_arrivee == "Point relais" ? true : false,
-                            isDomicile: advert.type_adresse_arrivee == "Domicile" ? true : false,
-                            isAutre: advert.type_adresse_arrivee == "Autre lieux" ? true : false,
-                            isIndifferent: advert.type_adresse_arrivee == "Indifferent" ? true : false,
-                            placeHolderSelect: placeholderarrivee,
-                        },
-                        gellery: advert.gallery,
-                        fileList: advert.gallery,
-                        bagages: {
-                            ...prevState.bagages,    // keep all other key-value pairs
-                            dimensionsLong: advert.dimensionsLong,
-                            dimensionsH: advert.dimensionsH,
-                            dimensionsLarg: advert.dimensionsLarg,
-                            dimensionsKg: advert.dimensionsKg,
-                            isBagage: advert.objectType.includes("Bagage") ? true : false,
-                            isSacDos: advert.objectType.includes("Sac à dos") ? true : false,
-                            isHorsFormat: advert.objectType.includes("Hors format") ? true : false,
-                            isPetitObj: advert.objectType.includes("Petits objets") ? true : false,
-                            isIndifferent: advert.objectType.includes("Indifferent") ? true : false,
-                            isChat: advert.objectType.includes("Chat") ? true : false,
-                            isVoiture: advert.objectTransport.includes("Voiture") ? true : false,
-                            isCar: advert.objectTransport.includes("Car") ? true : false,
-                            isCamion: advert.objectTransport.includes("Camion") ? true : false,
-                            isAvion: advert.objectTransport.includes("Avion") ? true : false,
-                            isTrain: advert.objectTransport.includes("Train") ? true : false,
-                            isBateau: advert.objectTransport.includes("Bateau") ? true : false,
-                            isIndifferentV: advert.objectTransport.includes("IndifferentV") ? true : false,
-                        },
-                    })
-                    , () => {
-                        console.log(this.state.settingPriceDep)
-                        /* this.state.settingPriceDep.map(val=> this.setState({assurancePriceDep: val.checked?this.state.assurancePriceDep + val.price:this.state.assurancePriceDep},()=>{
-                             console.log(val.price)
-                             console.log(this.state.assurancePriceDep)
-
-                         }))*/
-
-
-                    })
-                this.state.settingPriceDep?.map(working =>
-                    (working.checked && this.setState({assurancePriceDep: this.state.assurancePriceDep + working.price}, () => {
-                        console.log(working.price)
-                        console.log(this.state.assurancePriceDep)
-
-                    })))
-
-                this.state.settingPriceArr?.map(working =>
-                    (working.checked && this.setState({assurancePriceArr: this.state.assurancePriceArr + working.price}, () => {
-                        console.log(this.state.assurancePriceArr)
-
-                    })))
-
-
-                this.setState({loading: false})
-            });
-
-
-        }
-
         if (user) {
-            axios.post('api/address/list', {token: user.client?.token}).then(res => {
+
+            axios.post('api/address/list', {token: user?.client?.token}).then(res => {
                 if (res.data.status) {
                     this.setState(prevState => ({
                             depart: {
@@ -266,9 +164,119 @@ class ConfierLieuDepot extends Component {
                     );
                 }
             })
+            axios.post('api/profil/photo/list', {token: user?.client?.token}).then(res => {
+                this.setState({mesBagages: res.data.tabGallery},()=>{
+                    console.log(this.state.mesBagages)
+                    console.log(this.state.fileList)
+                    if (this.props.location.state) {
+                        axios.get('api/advert/get/' + this.props.location.state.id).then(res => {
+                            console.log(res.data)
+                            let advert = res.data.advert
+                            let placeholderdepart = advert.type_adresse_depart == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
+                                advert.type_adresse_depart == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
+                                    advert.type_adresse_depart == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
+                                        advert.type_adresse_depart == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
+                            let placeholderarrivee = advert.type_adresse_arrivee == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
+                                advert.type_adresse_arrivee == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
+                                    advert.type_adresse_arrivee == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
+                                        advert.type_adresse_arrivee == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
+                            this.setState(prevState => ({
+                                idPointRelaisDep: advert.idPointRelaisDep,
+                                idPointRelaisArr: advert.idPointRelaisArr,
+                                adresse_point_depart: advert.adresse_point_depart,
+                                lat_adresse_point_depart: advert.lat_adresse_point_depart,
+                                long_adresse_point_depart: advert.long_adresse_point_depart,
+                                adresse_point_arrivee: advert.adresse_point_arrivee,
+                                lat_adresse_point_arrivee: advert.lat_adresse_point_arrivee,
+                                long_adresse_point_arrivee: advert.long_adresse_point_arrivee,
+                                price: advert.price,
+                                newprice: advert.price,
+                                statusAnn: advert.status,
+                                listeContenu: advert.listeContenu,
+                                depart: {
+                                    ...prevState.depart,    // keep all other key-value pairs
+                                    ville_depart: advert.ville_depart,
+                                    heure: advert.heureDepart,
+                                    date: advert.dateDepart,
+                                    nomEntreprise: advert.type_adresse_depart == "Point relais" && advert.nomEntrepriseDep,
+                                    isPointRelais: advert.type_adresse_depart == "Point relais" ? true : false,
+                                    isDomicile: advert.type_adresse_depart == "Domicile" ? true : false,
+                                    isAutre: advert.type_adresse_depart == "Autre lieux" ? true : false,
+                                    isIndifferent: advert.type_adresse_depart == "Indifferent" ? true : false,
+                                    placeHolderSelect: placeholderdepart,
+                                },
+                                settingPriceDep: advert.settingPriceDep.length ? advert.settingPriceDep : this.state.settingPriceDep,
+                                settingPriceArr: advert.settingPriceArr.length ? advert.settingPriceArr : this.state.settingPriceArr,
+                                arrivee: {
+                                    ...prevState.arrivee,    // keep all other key-value pairs
+                                    ville_arrivee: advert.ville_arrivee,
+                                    heure: advert.heureArrivee,
+                                    date: advert.dateArrivee,
+                                    nomEntreprise: advert.type_adresse_arrivee == "Point relais" && advert.nomEntrepriseArr,
+                                    isPointRelais: advert.type_adresse_arrivee == "Point relais" ? true : false,
+                                    isDomicile: advert.type_adresse_arrivee == "Domicile" ? true : false,
+                                    isAutre: advert.type_adresse_arrivee == "Autre lieux" ? true : false,
+                                    isIndifferent: advert.type_adresse_arrivee == "Indifferent" ? true : false,
+                                    placeHolderSelect: placeholderarrivee,
+                                },
+                                gellery: advert.gallery,
+                                fileList: advert.gallery,
+                                bagages: {
+                                    ...prevState.bagages,    // keep all other key-value pairs
+                                    dimensionsLong: advert.dimensionsLong,
+                                    dimensionsH: advert.dimensionsH,
+                                    dimensionsLarg: advert.dimensionsLarg,
+                                    dimensionsKg: advert.dimensionsKg,
+                                    isBagage: advert.objectType.includes("Bagage") ? true : false,
+                                    isSacDos: advert.objectType.includes("Sac à dos") ? true : false,
+                                    isHorsFormat: advert.objectType.includes("Hors format") ? true : false,
+                                    isPetitObj: advert.objectType.includes("Petits objets") ? true : false,
+                                    isIndifferent: advert.objectType.includes("Indifferent") ? true : false,
+                                    isChat: advert.objectType.includes("Chat") ? true : false,
+                                    isVoiture: advert.objectTransport.includes("Voiture") ? true : false,
+                                    isCar: advert.objectTransport.includes("Car") ? true : false,
+                                    isCamion: advert.objectTransport.includes("Camion") ? true : false,
+                                    isAvion: advert.objectTransport.includes("Avion") ? true : false,
+                                    isTrain: advert.objectTransport.includes("Train") ? true : false,
+                                    isBateau: advert.objectTransport.includes("Bateau") ? true : false,
+                                    isIndifferentV: advert.objectTransport.includes("IndifferentV") ? true : false,
+                                },
+                            }),()=>{
+                                this.setState(prev=>({
+                                    mesBagages:prev.mesBagages?.map(item=>
+                                        (this.state.fileList.filter(val=>val.url===item.url).length>0 ? Object.assign(item, {checked: true}) : item),
+                                    )}))
+                            })
+                            this.state.settingPriceDep?.map(working =>
+                                (working.checked && this.setState({assurancePriceDep: this.state.assurancePriceDep + working.price}, () => {
+                                    console.log(working.price)
+                                    console.log(this.state.assurancePriceDep)
+
+                                })))
+
+                            this.state.settingPriceArr?.map(working =>
+                                (working.checked && this.setState({assurancePriceArr: this.state.assurancePriceArr + working.price}, () => {
+                                    console.log(this.state.assurancePriceArr)
+
+                                })))
+
+
+                            this.setState({loading: false})
+                        });
+
+
+                    }
+
+
+                })
+            })
+
         } else {
             this.setState({loading: false})
         }
+
+
+
 
 
     }
@@ -311,7 +319,7 @@ class ConfierLieuDepot extends Component {
             idPointRelaisArr: this.state.idPointRelaisArr,
             settingPriceDep: this.state.settingPriceDep,
             settingPriceArr: this.state.settingPriceArr,
-            canDepose: this.state.canDepose,
+            statusAnn: this.state.status,
             listeContenu: this.state.listeContenu,
             ville_depart: depart.ville_depart,
             fromDate: depart.date,
@@ -429,7 +437,18 @@ class ConfierLieuDepot extends Component {
             this.handleUpload(e.file.originFileObj)
             console.log(e.file)
         } else if (e.file.status == "removed") {
-            this.setState({isUploaded: true})
+            let isRemovedMesBgg= this.state.fileList.filter(val =>
+                (val.url === e.file.url))
+            console.log(isRemovedMesBgg.length)
+            if(isRemovedMesBgg.length===1){
+                this.setState(prev=>({
+                    mesBagages:prev.mesBagages.map(item=>
+                        (item.url === e.file.url ? Object.assign(item, {checked: false}) : item),
+                    )
+                }),()=>console.log(this.state.mesBagages))
+                console.log(this.state.mesBagages)
+            }
+        this.setState({isUploaded: true})
         }
 
         this.setState(({fileList: e.fileList, loading1: false}), () => {
@@ -999,9 +1018,23 @@ class ConfierLieuDepot extends Component {
                                 {depart.isIndifferent ?
                                     <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
                                         <label className='requis'>{t('page_home.ville_depart')}</label>
-                                        <input type={"text"} name={"ville_depart"} value={depart.ville_depart}
-                                               required
-                                               onChange={this.handleChangedepart}/>
+                                               <Autocomplete value={depart.ville_depart}
+                                                             name={"ville_depart"}
+                                                             apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                             options={{
+                                                                 types: ["locality"],
+                                                                 componentRestrictions: { country: "fr" },
+                                                             }}
+                                                             onPlaceSelected={(place) => {
+                                                                 place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                     this.setState(prevState => ({
+                                                                         depart: {
+                                                                             ...prevState.depart,    // keep all other key-value pairs
+                                                                             ville_depart: res.long_name
+                                                                         },
+                                                                     }), () => console.log(place)) : null);
+                                                             }}
+                                                             required onChange={this.handleChangedepart}/>
 
                                     </div> : depart.isAutre ?
                                         <Autocomplete style={{maxWidth: 800}}
@@ -1035,10 +1068,23 @@ class ConfierLieuDepot extends Component {
                                                 {depart.isPointRelais ?
                                                     <div className={'text-left mb-2'}>
                                                         <label className="requis">{t('page_home.ville_depart')}</label>
-                                                        <input type={"text"} name={"ville_depart"}
-                                                               value={depart.ville_depart}
-                                                               required
-                                                               onChange={this.handleChangedepart}/>
+                                                        <Autocomplete value={depart.ville_depart}
+                                                                      name={"ville_depart"}
+                                                                      apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                                      options={{
+                                                                          types: ["locality"],
+                                                                          componentRestrictions: { country: "fr" },
+                                                                      }}
+                                                                      onPlaceSelected={(place) => {
+                                                                          place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                              this.setState(prevState => ({
+                                                                                  depart: {
+                                                                                      ...prevState.depart,    // keep all other key-value pairs
+                                                                                      ville_depart: res.long_name
+                                                                                  },
+                                                                              }), () => console.log(place)) : null);
+                                                                      }}
+                                                                      required onChange={this.handleChangedepart}/>
                                                         <br/>
                                                     </div> : null}
                                                 <select name={"adresse_point_depart"}
@@ -1109,11 +1155,11 @@ class ConfierLieuDepot extends Component {
                                                             </div>
                                                         )}</div> : null}
                                             </div> : null}
-                                <div
+                                {this.state.statusAnn?null:<div
                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                     <button onClick={() => this.publier(0)}
                                             className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                </div>
+                                </div>}
                                 <div
                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                     <Link to={'/deposer-annonce'}
@@ -1394,10 +1440,24 @@ class ConfierLieuDepot extends Component {
                                     {arrivee.isIndifferent ?
                                         <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
                                             <label className="requis">{t('page_home.ville_arrivee')}</label>
-                                            <input type={"text"} name={"ville_arrivee"}
-                                                   value={arrivee.ville_arrivee}
-                                                   required
-                                                   onChange={this.handleChangeConfierRetrait}/>
+                                            <Autocomplete value={arrivee.ville_arrivee}
+                                                          name={"ville_arrivee"}
+                                                          apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                          options={{
+                                                              types: ["locality"],
+                                                              componentRestrictions: { country: "fr" },
+                                                          }}
+                                                          onPlaceSelected={(place) => {
+                                                              place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                  this.setState(prevState => ({
+                                                                      arrivee: {
+                                                                          ...prevState.arrivee,    // keep all other key-value pairs
+                                                                          ville_arrivee: res.long_name
+                                                                      },
+                                                                  }), () => console.log(place)) : null);
+                                                          }}
+                                                          required onChange={this.handleChangeConfierRetrait}/>
+
                                         </div> : arrivee.isAutre ?
                                             <Autocomplete value={this.state.adresse_point_arrivee} style={{maxWidth: 800}}
                                                           options={{
@@ -1426,10 +1486,23 @@ class ConfierLieuDepot extends Component {
                                                 {arrivee.isPointRelais ?
                                                     <div className={'text-left mb-2'}>
                                                         <label className="requis">{t('page_home.ville_arrivee')}</label>
-                                                        <input type={"text"} name={"ville_arrivee"}
-                                                               value={arrivee.ville_arrivee}
-                                                               required
-                                                               onChange={this.handleChangeConfierRetrait}/>
+                                                        <Autocomplete value={arrivee.ville_arrivee}
+                                                                      name={"ville_arrivee"}
+                                                                      apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                                      options={{
+                                                                          types: ["locality"],
+                                                                          componentRestrictions: { country: "fr" },
+                                                                      }}
+                                                                      onPlaceSelected={(place) => {
+                                                                          place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                              this.setState(prevState => ({
+                                                                                  arrivee: {
+                                                                                      ...prevState.arrivee,    // keep all other key-value pairs
+                                                                                      ville_arrivee: res.long_name
+                                                                                  },
+                                                                              }), () => console.log(place)) : null);
+                                                                      }}
+                                                                      required onChange={this.handleChangeConfierRetrait}/>
                                                         <br/>
                                                     </div> : null}
                                                 <select name={"adresse_point_arrivee"}
@@ -1503,11 +1576,11 @@ class ConfierLieuDepot extends Component {
                                                             </div>
                                                         )}</div> : null}
                                             </div>}
-                                    <div
+                                    {this.state.statusAnn?null:<div
                                         className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                         <button onClick={() => this.publier(0)}
                                                 className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                    </div>
+                                    </div>}
                                     <div
                                         className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                         <button onClick={() => {
@@ -2024,11 +2097,11 @@ class ConfierLieuDepot extends Component {
                                         </div>
 
 
-                                        <div
+                                        {this.state.statusAnn?null:<div
                                             className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                             <button onClick={() => this.publier(0)}
                                                     className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                        </div>
+                                        </div>}
                                         <div
                                             className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                             <button onClick={() => {
@@ -2076,7 +2149,42 @@ class ConfierLieuDepot extends Component {
                                                     <label
                                                         className={'requis d-block w-100 text-left'}>{t('circuit_depot_annonce.ajoutPhoto')}
                                                     </label>
-                                                    <div className="clearfix text-md-left text-center">
+                                                    {this.state.mesBagages?.map(bgg=><Checkbox checked={bgg.checked} className={"checkMeInImg"} name={bgg.url} onChange={(e)=>{
+                                                        console.log(e)
+                                                        this.setState(prev=>({
+                                                            mesBagages:prev.mesBagages?.map(item=>
+                                                                (item.url === e.target.name ? Object.assign(item, {checked: e.target.checked}) : item),
+                                                            )
+                                                        }),()=>console.log(this.state.mesBagages))
+                                                        if(e.target.checked) {
+
+                                                            let dejaUploaded=false
+                                                            this.state.fileList.map(val =>
+                                                                (val.url === e.target.name? dejaUploaded=true: null))
+                                                            if(!dejaUploaded) {
+                                                                this.setState(prevState => ({
+                                                                    gellery: [...prevState.gellery, {
+                                                                        url: e.target.name
+                                                                    }],
+                                                                    fileList: [...prevState.fileList, {
+                                                                        url: e.target.name
+                                                                    }]
+
+                                                                }), () => {
+                                                                    this.setState({isUploaded: true})
+                                                                    console.log(this.state.fileList)
+                                                                })
+                                                            }
+                                                        }else{
+                                                            this.setState(prevState=>({
+                                                                gellery: prevState.gellery.filter(val =>
+                                                                    (val.url !== e.target.name)),
+                                                                fileList: prevState.fileList.filter(val =>
+                                                                    (val.url !== e.target.name))
+                                                            }))
+                                                        }
+                                                    }}><LazyLoadImage src={bgg.url} style={{height:150,width:'auto'}}/> </Checkbox>)}
+                                                    <div className="clearfix text-md-left text-center mt-3">
                                                         <Upload
                                                             action=""
                                                             listType="picture-card"
@@ -2098,12 +2206,12 @@ class ConfierLieuDepot extends Component {
                                                 </div>
                                             </div>
 
-                                            <div
+                                            {this.state.statusAnn?null:<div
                                                 className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                                 <button disabled={!this.state.isUploaded ? true : false}
                                                         onClick={() => this.publier(0)}
                                                         className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                            </div>
+                                            </div>}
                                             <div
                                                 className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                                 <button onClick={() => {
@@ -2749,7 +2857,7 @@ class ConfierLieuDepot extends Component {
                                                 </div>
                                                 <div
                                                     className='prix w-75 mx-auto my-4 text-blue d-flex flex-row align-items-center justify-content-between p-2 rounded-pill '>
-                                                    <div>{t('circuit_depot_annonce.priceTotal')}:</div>
+                                                    <div>{t('circuit_depot_annonce.priceTotal')}: <small>{t('circuit_depot_annonce.remunerationPorteurCommissionBagzee')}</small></div>
                                                     <div className={"d-flex flex-row align-items-center"}>
                                                         <button className="btnCircleBleu" onClick={() => {
                                                             this.state.newprice > price ? this.setState({newprice: this.state.newprice - 1}) : null
@@ -2764,13 +2872,13 @@ class ConfierLieuDepot extends Component {
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div
+                                                {this.state.statusAnn?null:<div
                                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                                     <button onClick={() => {
                                                         this.setState({canDepose: fileList.length ? true : false}, () => this.publier(0))
                                                     }}
                                                             className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                                </div>
+                                                </div>}
                                                 <div
                                                     className={"d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 my-4"}>
                                                     <button onClick={() => {

@@ -219,7 +219,7 @@ class Login extends Component {
                         name="register"
                         onFinish={onFinish}
                         scrollToFirstError
-                        requiredMark={false}
+                        requiredMark={true}
                     >
                         <Form.Item name={"isPointRelais"} style={{display: 'none'}}
                                    initialValue={isPRelais ? true : false}>
@@ -369,7 +369,7 @@ class Login extends Component {
 
                             </Form.Item>}
                         <Form.Item  name={['phoneStripe', 'phone']}
-                                   label="Numéro de téléphone"
+                                    label={<span className={'requis'}>Numéro de téléphone</span>}
                         >
                             <Space.Compact style={{width: '100%'}}>
                                 <Form.Item
@@ -856,7 +856,7 @@ class Login extends Component {
                         form={form}
                         layout="vertical"
                         name="form_connexion"
-                        requiredMark={false}
+                        requiredMark={true}
                         key={'form_connexion-' + Math.random()}
                     >
                         <Form.Item

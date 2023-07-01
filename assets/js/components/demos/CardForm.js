@@ -136,7 +136,7 @@ const CardForm = (props) => {
                 <LazyLoadImage src={"/images/visa.png"} alt={'visa'} width={"40px"} className={'pr-2'}/>
                 <LazyLoadImage src={"/images/amex.png"} alt={'amex'} width={"40px"}/>
 
-                <Form requiredMark={false}
+                <Form requiredMark={true}
                       form={form}
                       name="addCard"
                       scrollToFirstError>

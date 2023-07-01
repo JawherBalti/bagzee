@@ -557,6 +557,10 @@ class Advert
         return $this;
     }
 
+    public function getCanDepose(): ?bool
+    {
+        return $this->canDepose;
+    }
     public function getPointRelaisDepart(): ?Client
     {
         return $this->point_relais_depart;

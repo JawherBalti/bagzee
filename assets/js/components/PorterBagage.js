@@ -150,6 +150,7 @@ class PorterBagage extends Component {
           objectType: myArr,
           objectTransport: myArr2,
           type: 2,
+          page: page,
         })
         .then((res) => {
           if (page == 1) {
@@ -299,10 +300,9 @@ class PorterBagage extends Component {
                         }}
                         placeholder={t("page_home.ville_depart")}
                         apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
-                        options={{
-                          types: ["geocode", "establishment"],
-                          strictBounds: true,
-                          componentRestrictions: { country: "fr" },
+                      options={{
+                        types: ["locality"],
+                        componentRestrictions: { country: "fr" },
                         }}
                         onPlaceSelected={(place) => {
                           this.setState({
@@ -324,9 +324,8 @@ class PorterBagage extends Component {
                         }}
                         placeholder={t("page_home.ville_arrivee")}
                         apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
-                        options={{
-                          types: ["geocode", "establishment"],
-                          strictBounds: true,
+                      options={{
+                         types: ["locality"],
                           componentRestrictions: { country: "fr" },
                         }}
                         onPlaceSelected={(place) => {

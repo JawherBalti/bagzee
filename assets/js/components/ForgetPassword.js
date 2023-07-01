@@ -46,7 +46,8 @@ const ForgetPassword = (props) => {
                                     Veuillez entrer votre adresse e-mail pour réinitialiser<br/>votre mot de passe.
                                 </Trans>
                                 </p>
-                            <Form form={formM2p} name={'m2b_oublier'}>
+                            <Form form={formM2p} name={'m2b_oublier'} requiredMark={true}
+                            >
                                 <Form.Item name={'email'} label={props.t('adr_mail')} rules={[{
                                     type: 'email',
                                     message: 'Votre email ' +

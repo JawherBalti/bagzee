@@ -492,6 +492,7 @@ class BaggagiteController extends AbstractController
                 'type_adresse_arrivee' => $baggagiste->getTypeAdresseArrivee(),
                 'type_adresse_depart' => $baggagiste->getTypeAdresseDepart(),
                 'objectType' => $baggagiste->getObjectType() ? implode(',', $baggagiste->getObjectType()) : '',
+                'canDepose' => $baggagiste->getCanDepose(),
                 'objectTransport' => $baggagiste->getObjectTransport(),
                 'lat_adresse_point_depart' => $baggagiste->getLatAdressePointDepart(),
                 'long_adresse_point_depart' => $baggagiste->getLongAdressePointDepart(),

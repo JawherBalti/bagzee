@@ -30,9 +30,8 @@ class Avis extends Component {
     constructor(props) {
         super();
         this.state = {
-            status: props.location.state?.status
-                ? props.location.state.status.toString()
-                : "0",
+
+
             clientData: {},
             annoncesAdverts: [],
             annoncesBaggagiste: [],
@@ -57,7 +56,7 @@ class Avis extends Component {
 
             axios
                 .get(
-                    `api/profil/adverts?id=${this.props.match.params.id}&status=${this.state.status}`
+                    `api/profil/adverts?id=${this.props.match.params.id}&status=1`
                 )
                 .then((res) =>
                     this.setState({annoncesAdverts: res.data.adverts})
@@ -66,7 +65,7 @@ class Avis extends Component {
 
             axios
                 .get(
-                    `api/profil/baggagistes?id=${this.props.match.params.id}&status=${this.state.status}`
+                    `api/profil/baggagistes?id=${this.props.match.params.id}&status=1`
                 )
                 .then((res) => {
                     this.setState({
@@ -319,6 +318,14 @@ class Avis extends Component {
                 <div className={"profil_blocks Messagerie"}>
                     <div className={"container_fluid py-2 px-4"}>
                         <div className={"row justify-content-center mt-5 mb-3"}>
+                        <div className={"col-md-12 d-flex flex-column justify-content-center align-items-center"}>
+                                        <p className={'text-center fs-small'}>
+                                            {this.state.client.description?this.state.client.description:<>Lorem ipsum dolor sit amet, consectetur adipiscing
+                                                elit, sed do eiusmod
+                                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                                commodo consequat.</>}</p>
+                                    </div>
                             <div className={"col-md-12 bg-white p-4"}>
                                 <div className={"row"}>
                                     <div
@@ -434,14 +441,6 @@ class Avis extends Component {
                                         <h2 className={"fs-1 text-orange"}>
                                             {this.state.mesInfoAvis.total?this.state.mesInfoAvis.total:0}/5
                                         </h2>
-                                    </div>
-                                    <div className={"col-md-12 d-flex flex-column justify-content-center align-items-center"}>
-                                        <p className={'fs-small'}>
-                                            {this.state.client.description?this.state.client.description:<>Lorem ipsum dolor sit amet, consectetur adipiscing
-                                                elit, sed do eiusmod
-                                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                                                commodo consequat.</>}</p>
                                     </div>
                                 </div>
                             </div>
@@ -866,6 +865,14 @@ class Avis extends Component {
                     <div className={"profil_blocks Messagerie"}>
                         <div className={"container_fluid py-2 px-4"}>
                             <div className={"row justify-content-center mt-5 mb-3"}>
+                            <div className={"col-md-12 d-flex flex-column justify-content-center align-items-center"}>
+                                        <p className={'text-center fs-small'}>
+                                            {this.state.clientData.description?this.state.clientData.description:<>Lorem ipsum dolor sit amet, consectetur adipiscing
+                                                elit, sed do eiusmod
+                                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                                                commodo consequat.</>}</p>
+                                    </div>
                                 <div className={"col-md-12 bg-white p-4"}>
                                     <div className={"row"}>
                                         <div
@@ -2069,6 +2076,7 @@ class Avis extends Component {
                                                             pathname: "/recapitulatif-annonce",
                                                             state: {
                                                                 token: this.state.client?.token,
+                                                                id: order.id,
                                                                 myReservation: {
                                                                     ...order,
                                                                     client: this.state.clientData,

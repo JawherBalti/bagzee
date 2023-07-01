@@ -1938,11 +1938,6 @@ button.ant-btn.alertAnn {
     margin-left: 5px;
   }
 
-  .ant-form-item-label > label::after {
-    content: "*";
-    color: red;
-    margin-left: 5px;
-  }
 
 .validPassword .ant-col.ant-form-item-label {
     display: block;
@@ -2489,6 +2484,19 @@ button:disabled {
 }
 .listAnnonce img.ml-2{
     width: 15px;
+}
+label.ant-checkbox-wrapper.checkMeInImg span.ant-checkbox {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    height: max-content;
+}
+.checkMeInImg .ant-checkbox-checked + span {
+    border: 1px solid #1890ff  !important;
+    border-radius: 10px;
+}
+label.ant-checkbox-wrapper.checkMeInImg {
+    position: relative;
 }
 .bg-white.role-porteur {
     border: 5px solid #EF7723 !important;

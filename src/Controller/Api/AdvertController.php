@@ -368,6 +368,7 @@ class AdvertController extends AbstractController
                 'settingPriceDep' => $advert->getobjectRelaisDepart() && $advert->getTypeAdressDepart() == "Point relais" ? $advert->getobjectRelaisDepart() : [],
                 'settingPriceArr' => $advert->getobjectRelaisArriv() && $advert->getTypeAdresseArrivee() == "Point relais" ? $advert->getobjectRelaisArriv() : [],
                 'price' => $advert->getPrice(),
+                'canDepose' => $advert->getCanDepose(),
                 'priceNet' => $advert->getPriceNet()? $advert->getPriceNet():30,
                 'adresse_point_depart' => $advert->getAdressPointDepart(),
                 'adresse_point_arrivee' => $advert->getAdressPointArrivee(),
@@ -411,7 +412,7 @@ class AdvertController extends AbstractController
                 $hasAdvertQuery = $this->advertQueryRepository->findOneBy(['client' => $client, 'advert' => $advert]);
                 $paied= false;
                 foreach ($advert->getAdvertQueries() as $key=>$advQuery){
-                    if($advQuery->getIsPaied() && $advQuery->getIsValid()){
+                    if($advQuery->getIsPaied()==1 && $advQuery->getIsValid()==1){
                         $paied= true;
                     }
                 }

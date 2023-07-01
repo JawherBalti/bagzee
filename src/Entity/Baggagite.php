@@ -477,6 +477,10 @@ class Baggagite
         return $this->canDepose;
     }
 
+    public function getCanDepose(): ?bool
+    {
+        return $this->canDepose;
+    }
     public function setCanDepose(bool $canDepose): self
     {
         $this->canDepose = $canDepose;
