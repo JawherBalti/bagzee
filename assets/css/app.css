@@ -87,6 +87,21 @@
 }
 
 
+@media screen and (min-width:768px) {
+    .confierBG input {
+        min-width: 80% !important;
+    }
+    .confier-input-container {
+        margin-left: -25px;
+    }
+    .dimensions-container > .confier-input-container:nth-child(2) {
+        margin-left: -50px;
+    }
+    .dimensions-container > .confier-input-container:nth-child(3) {
+        margin-left: -50px;
+    }
+}
+
 @media screen and (max-width: 1290px) and (min-width: 768px) {
 
     .etapesBagageImage {
@@ -97,7 +112,7 @@
     .etapesBagageText{
         font-size: 10px;
     }
-    }
+}
 
 
 @media screen and (max-width: 1047px) and (min-width: 768px) {
@@ -796,7 +811,12 @@ iframe {
     font-family: Gordita_Bold;
     background: #F1D982;
 }
-
+[onClick]{
+    cursor:pointer !important;
+}
+.mosaic-container .col .picture img {
+    padding: 2px !important;
+}
 button.btnOK {
     background: #2D3954;
     color: #fff;
@@ -2727,6 +2747,23 @@ min-width: 100% !important;
     border-radius: 32px !important;
 }
 
+.userStatut > .btnStatut {
+    display: flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border: 2px solid #707070;
+    color: #1C2D5A;
+    width: max-content;
+    height: 25px;
+    display: inline-block;
+    min-width: max-content;
+    background-color: transparent;
+    padding: 7px 20px !important;
+    border-radius: 32px !important;
+    font: normal normal medium 10px/56px Gordita_regular;
+    font-size: 14px;
+}
+
 .role-porteur .myBtn {
     background-color: #EF7723;
     border-color: #EF7723;
@@ -3404,8 +3441,7 @@ div[id^='react-faq-rowtitle-'] {
 
 .etapesBagage {
     display: flex;
-    width: 100%;
-    justify-content: space-around;
+    justify-content: space-between;
     padding-top: 30px;
 }
 
@@ -3613,6 +3649,13 @@ button.react-share__ShareButton.ant-btn.ant-btn-default.btnBlue {
     padding: 20px;
     border-radius: 40px;
     box-shadow: 0 5px 11px rgb(0 0 0 / 16%);
+}
+
+.confier-input {
+    font-size: 12px;
+    height: 50px !important;
+    max-width: 50px !important;
+    border: 3px solid #D6D6D6 !important;
 }
 
 .btnConfier {
@@ -3949,7 +3992,7 @@ svg.svg-inline--fa.fa-image.fa-w-16 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: 0 4px
+    margin: 0
 }
 
 
@@ -4028,8 +4071,12 @@ svg.svg-inline--fa.fa-image.fa-w-16 {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    width: 100%;
+    width: 150px;
     margin-bottom: 0;
+}
+
+.avis {
+    width: 150px;
 }
 
 .bagage-info {
@@ -4043,6 +4090,21 @@ svg.svg-inline--fa.fa-image.fa-w-16 {
 
 .annonce-info-bottom, .annonce-info-top {
 width:100%
+}
+
+.username {
+    font: normal normal medium 16px/23px Gordita_Regular;
+    color: #000;
+    width: 53px;
+    height: 23px;
+    text-align: left;
+}
+
+@media screen and (min-width: 1450px) {
+    .avis {
+        text-align: left;
+        padding-left: 5px;
+    }
 }
 
 @media screen and (max-width: 1450px) and (min-width: 992px) {
@@ -4132,7 +4194,10 @@ font-size: 12px;
 }
 
 @media screen and (min-width: 992px) {
-
+    .avis-annonce {
+        width:800px !important; 
+        max-width:800px !important;
+    }
     .navbar label {
         display: none
     }
