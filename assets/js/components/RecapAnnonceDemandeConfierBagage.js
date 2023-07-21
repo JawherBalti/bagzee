@@ -14,6 +14,7 @@ import {
     faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import {Button, Checkbox, Form, Input, Modal, Tag, Upload} from "antd";
+
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -124,6 +125,7 @@ class RecapAnnonceDemandeConfierBagage extends Component {
             loadingPhoto: false,
             previewVisible: false,
             previewImage: '',
+            mesBagages: [],
             fileList: [],
             gellery: [],
             adresse_point_arrivee: '',
@@ -139,10 +141,23 @@ class RecapAnnonceDemandeConfierBagage extends Component {
 
     componentDidMount() {
 
+        axios.get('api/payment/setting/price').then(res => {
+            let neww = JSON.parse(JSON.stringify(res.data.setting_price));
+            if (res.data.status) {
+                this.setState({
+                    settingPriceDep: res.data.setting_price,
+                    settingPriceArr: neww
+
+                }, () => {
+                    console.log(this.state.settingPriceDep)
+                    console.log(this.state.settingPriceArr)
+                })
+            }
+
+        })
+
         if (user) {
-            axios.post('api/profil/photo/list', {token: user?.client?.token}).then(res => {
-                this.setState({mesBagages: res.data.tabGallery})
-            })
+
             axios.post('api/address/list', {token: user.client.token}).then(res => {
                 if (res.data.status) {
                     this.setState(prevState => ({
@@ -178,6 +193,7 @@ class RecapAnnonceDemandeConfierBagage extends Component {
 
         console.log(this.props.match.params.id)
         if (this.props.location?.state?.myReservation) {
+            console.log(this.props.location.state)
             /*page je veux conifer mon bagage vers recapitulatif annonce*/
             axios.get('api/payment/setting/price').then(res => {
                 this.setState(prev => ({
@@ -193,91 +209,157 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                 listeContenu: this.props.location.state.myReservation.listeContenu,
                 contenuRefuse: this.props.location.state.myReservation.contenuRefuse,
             }), () => {
-                console.log(this.state.myReservation)
-                this.setState({loading: false})
-            })
+                if(user) {
+                    axios.post('api/profil/photo/list', {token: user?.client?.token}).then(res => {
+                        this.setState({mesBagages: res.data.tabGallery}, () => {
+                            this.setState({loading: false})
+
+                        })
+                    })
+                } else{
+                    this.setState({loading: false})
+                } })
 
         } else {
             /*modifier annonce demande reservation vers recapitulatif annonce */
-            axios.post('api/profil/baggagistes/query/by/id', {
-                id: this.props.match.params.id,
-                token: user.client.token
-            }).then(res => {
-                let advert = res.data.baggagistes
-                this.setState(prevState => ({
-                    orderId: advert.orderId,
-                    depart: {
-                        ...prevState.depart,
-                        nomEntreprise: advert.type_adresse_depart == "Point relais" && advert.nomEntrepriseDep,
-                        isPointRelais: advert.type_adresse_depart == "Point relais" ? true : false,
-                        isDomicile: advert.type_adresse_depart == "Domicile" ? true : false,
-                        isAutre: advert.type_adresse_depart == "Autre lieux" ? true : false,
-                        isIndifferent: advert.type_adresse_depart == "Indifferent" ? true : false,
-                    },
-                    arrivee: {
-                        ...prevState.arrivee,
-                        nomEntreprise: advert.type_adresse_arrivee == "Point relais" && advert.nomEntrepriseArr,
-                        isPointRelais: advert.type_adresse_arrivee == "Point relais" ? true : false,
-                        isDomicile: advert.type_adresse_arrivee == "Domicile" ? true : false,
-                        isAutre: advert.type_adresse_arrivee == "Autre lieux" ? true : false,
-                        isIndifferent: advert.type_adresse_arrivee == "Indifferent" ? true : false,
-                    },
-                    bagages: {
-                        ...prevState.bagages,
-                        dimensionsLong: advert.dimensionsLong,
-                        dimensionsH: advert.dimensionsH,
-                        dimensionsKg: advert.dimensionsKg,
-                        dimensionsLarg: advert.dimensionsLarg,
-                        ville_depart: advert.ville_depart,
-                        ville_arrivee: advert.ville_arrivee,
-                        heureDepart: advert.heureDepart,
-                        dateDepart: advert.dateDepart,
-                        heureArrivee: advert.heureArrivee,
-                        dateArrivee: advert.dateArrivee,
-                    },
-                    idPointRelaisDep: advert.idPointRelaisDep,
-                    idPointRelaisArr: advert.idPointRelaisArr,
-                    listeContenu: advert.listeContenu,
-                    contenuRefuse: advert.contenuRefuse,
-                    price: advert.porteur.price_porteur,
-                    priceNet: advert.porteur.priceNet,
-                    newprice: advert.porteur.price_porteur,
-                    assurancePrice: advert.porteur.price_porteur-advert.porteur.priceNet,
-                    gellery: advert.gallery,
-                    fileList: advert.gallery,
-                    isUploaded: true,
-                    myReservation: advert.infoAnnonce,
+          if(user) {
+              axios.post('api/profil/photo/list', {token: user?.client?.token}).then(res => {
+                  this.setState({mesBagages: res.data.tabGallery}, () => {
+                      axios.post('api/profil/baggagistes/query/by/id', {
+                          id: this.props.match.params.id,
+                          token: user?.client?.token
+                      }).then(res => {
+                          let advert = res.data.baggagistes
+                          this.setState(prevState => ({
+                              orderId: advert.orderId,
+                              depart: {
+                                  ...prevState.depart,
+                                  nomEntreprise: advert.type_adresse_depart == "Point relais" && advert.nomEntrepriseDep,
+                                  isPointRelais: advert.type_adresse_depart == "Point relais" ? true : false,
+                                  isDomicile: advert.type_adresse_depart == "Domicile" ? true : false,
+                                  isAutre: advert.type_adresse_depart == "Autre lieux" ? true : false,
+                                  isIndifferent: advert.type_adresse_depart == "Indifferent" ? true : false,
+                              },
+                              arrivee: {
+                                  ...prevState.arrivee,
+                                  nomEntreprise: advert.type_adresse_arrivee == "Point relais" && advert.nomEntrepriseArr,
+                                  isPointRelais: advert.type_adresse_arrivee == "Point relais" ? true : false,
+                                  isDomicile: advert.type_adresse_arrivee == "Domicile" ? true : false,
+                                  isAutre: advert.type_adresse_arrivee == "Autre lieux" ? true : false,
+                                  isIndifferent: advert.type_adresse_arrivee == "Indifferent" ? true : false,
+                              },
+                              bagages: {
+                                  ...prevState.bagages,
+                                  dimensionsLong: advert.dimensionsLong,
+                                  dimensionsH: advert.dimensionsH,
+                                  dimensionsKg: advert.dimensionsKg,
+                                  dimensionsLarg: advert.dimensionsLarg,
+                                  ville_depart: advert.ville_depart,
+                                  ville_arrivee: advert.ville_arrivee,
+                                  heureDepart: advert.heureDepart,
+                                  dateDepart: advert.dateDepart,
+                                  heureArrivee: advert.heureArrivee,
+                                  dateArrivee: advert.dateArrivee,
+                              },
+                              idPointRelaisDep: advert.idPointRelaisDep,
+                              idPointRelaisArr: advert.idPointRelaisArr,
+                              listeContenu: advert.listeContenu,
+                              contenuRefuse: advert.contenuRefuse,
+                              price: advert.porteur.price_porteur,
+                              priceNet: advert.porteur.priceNet,
+                              newprice: advert.porteur.price_porteur,
+                              assurancePrice: advert.porteur.price_porteur - advert.porteur.priceNet,
+                              gellery: advert.gallery,
+                              fileList: advert.gallery,
+                              isUploaded: true,
+                              myReservation: advert.infoAnnonce,
+                              settingPriceDep: advert.porteurs?.objectRelaisDepart?.length ? advert?.porteurs?.objectRelaisDepart : this.state.settingPriceDep,
+                              settingPriceArr: advert.porteurs?.objectRelaisArriv?.length ? advert?.porteurs?.objectRelaisArriv : this.state.settingPriceArr,
+          
+                              infoAvis: {
+                                  total: advert.porteur.totalAvis,
+                                  nbrAvis: advert.porteur.nbrAvis,
+                              },
+                              setting_price: advert.setting_price,
+                              adresse_point_depart: advert.adresse_point_depart,
+                              lat_adresse_point_depart: advert.lat_adresse_point_depart,
+                              long_adresse_point_depart: advert.long_adresse_point_depart,
+                              adresse_point_arrivee: advert.adresse_point_arrivee,
+                              lat_adresse_point_arrivee: advert.lat_adresse_point_arrivee,
+                              long_adresse_point_arrivee: advert.long_adresse_point_arrivee,
 
-                    infoAvis: {
-                        total: advert.porteur.totalAvis,
-                        nbrAvis: advert.porteur.nbrAvis,
-                    },
-                    setting_price: advert.setting_price,
-                    adresse_point_depart:advert.adresse_point_depart,
-                    lat_adresse_point_depart:advert.lat_adresse_point_depart,
-                    long_adresse_point_depart:advert.long_adresse_point_depart,
-                    adresse_point_arrivee:advert.adresse_point_arrivee,
-                    lat_adresse_point_arrivee:advert.lat_adresse_point_arrivee,
-                    long_adresse_point_arrivee:advert.long_adresse_point_arrivee,
 
+                          }), () => {
 
-                }), () => {
+                            this.state.settingPriceDep?.map(working =>
+                                (working.checked && this.setState({assurancePriceDep: (this.state.assurancePriceDep + working.price) - oldRelaisDep}, () => {
+                                    console.log(working.price)
+                                    console.log(this.state.assurancePriceDep)
+        
+                                })))
+        
+                            this.state.settingPriceArr?.map(working =>
+                                (working.checked && this.setState({assurancePriceArr: (this.state.assurancePriceArr + working.price) - oldRelaisArr}, () => {
+                                    console.log(this.state.assurancePriceArr)
+        
+                                })))
 
-                    this.setState(prev=>({
-                        mesBagages:prev.mesBagages.map(item=>
-                            (this.state.fileList.filter(val=>val.url===item.url).length>0 ? Object.assign(item, {checked: true}) : item),
-                        ),
-                        myReservation: {
-                            ...prev.myReservation,
-                            client: advert.porteur
-                        },loading: false
-                    }))
+                              this.setState(prev => ({
+                                  mesBagages: prev.mesBagages.map(item =>
+                                      (this.state.fileList.filter(val => val.url === item.url).length > 0 ? Object.assign(item, {checked: true}) : item),
+                                  ),
+                                  myReservation: {
+                                      ...prev.myReservation,
+                                      client: advert.porteur
+                                  }, loading: false
+                              }))
 
-                    console.log(this.state.setting_price)
-                });
-            })
+                              console.log(this.state.setting_price)
+                          });
+                      })
+                  })
+              })
+          }
 
         }
+    }
+
+    onCheckboxChangeAssDep(event, price) {
+        const target = event.target;
+        console.log(target.checked)
+        const value = target.checked;
+        const name = target.name;
+        let oldRelaisDep = 0;
+        this.state.myReservation?.objectRelaisDepart?.filter(val => val.checked && val.isRelais).map(item => oldRelaisDep = oldRelaisDep + item.price)
+
+        this.setState(prevState => ({
+            settingPriceDep: prevState.settingPriceDep.map(working =>
+                ('dep-' + working.name === name ? Object.assign(working, {checked: true}) : Object.assign(working, {checked: false}))),
+
+            newprice: this.state.assurancePriceDep ? (this.state.newprice - this.state.assurancePriceDep) + price : (this.state.newprice - oldRelaisDep) + price,
+            price: this.state.assurancePriceDep ? (this.state.newprice - this.state.assurancePriceDep) + price : (this.state.newprice - oldRelaisDep) + price,
+            assurancePriceDep: price
+        }), () => {
+            console.log(this.state.settingPriceDep)
+            console.log(this.state.settingPriceArr)
+        });
+    }
+
+    onCheckboxChangeAssArr(event, price) {
+        const target = event.target;
+        const value = target.checked;
+        const name = target.name;
+        let oldRelaisArr = 0;
+        this.state.myReservation?.objectRelaisArriv?.filter(val => val.checked && val.isRelais).map(item => oldRelaisArr = oldRelaisArr + item.price)
+        this.setState(prevState => ({
+            settingPriceArr: prevState.settingPriceArr.map(working =>
+                ('arr-' + working.name === name ? Object.assign(working, {checked: true}) : Object.assign(working, {checked: false}))),
+            newprice: this.state.assurancePriceArr ? (this.state.newprice - this.state.assurancePriceArr) + price : (this.state.newprice - oldRelaisArr) + price,
+            price: this.state.assurancePriceArr ? (this.state.newprice - this.state.assurancePriceArr) + price : (this.state.newprice - oldRelaisArr) + price,
+            assurancePriceArr: price
+
+
+        }), () => console.log(this.state.settingPriceArr));
     }
 
     handleUpload = async (file) => {
@@ -432,7 +514,11 @@ class RecapAnnonceDemandeConfierBagage extends Component {
         const {t} = this.props;
         const {isDetails, loading, myReservation, price, previewVisible, previewImage, fileList, contenuRefuse, listeContenu, arrivee, depart} = this.state;
        //console.log(Object.values(this.state.setting_price).every(val=>(val.checked==false && val.isRelais==true)))
-        const uploadButtonPP = (
+        
+       let objArr = this.state.assurancePriceArr ? this.state.settingPriceArr : myReservation?.objectRelaisArriv
+       let objDep = this.state.assurancePriceDep ? this.state.settingPriceDep : myReservation?.objectRelaisDepart
+
+       const uploadButtonPP = (
             <div className={'d-flex justify-content-center align-items-center flex-column'}
                  style={{border: "1px dashed #8F8F8F", borderRadius: 12, width: 170, height: 170}}>
                 <FontAwesomeIcon icon={faImage} className={'text-blue fs-1'}/>
@@ -440,6 +526,168 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                 </div>
             </div>
         );
+
+        const CollectionCreateFormCause = ({
+            visibleCause,
+            onCreateCause,
+            onCancelCause,
+          }) => {
+            const [form] = Form.useForm();
+            return (
+              <Modal
+                visible={visibleCause}
+                okText="Signaler"
+                onOk={() => {
+                  form
+                    .validateFields()
+                    .then((values) => {
+                      form.resetFields();
+                      onCreateCause(values);
+                    })
+                    .catch((info) => {
+                      console.log("Validate Failed:", info);
+                    });
+                }}
+                onCancel={onCancelCause}
+                footer={user ? [
+                    <Button
+                      key="submit"
+                      type="primary"
+                      className={"w-50"}
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then((values) => {
+                            form.resetFields();
+                            onCreateCause(values);
+                          })
+                          .catch((info) => {
+                            console.log("Validate Failed:", info);
+                          });
+                      }}
+                    >
+                      Envoyer
+                    </Button>,
+                  ] : null}
+              >
+                {user ? <>
+                <div className={"text-center"}>
+                  <p
+                    className="ff-Gordita-Medium"
+                    style={{ color: "#1C2D5A", fontSize: "20px" }}
+                  >
+                    Signaler
+                  </p>
+                  <LazyLoadImage
+                    src={"/images/signaler.png"}
+                    alt={"signaler"}
+                    width={"55%"}
+                  />
+                </div>
+                <Form
+                  form={form}
+                  layout="vertical"
+                  name="form_cause_in_evenement"
+                  requiredMark={false}
+                >
+                  <Form.Item
+                    name="objet"
+                    label={<span className="requis">Objet</span>}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Objet ne doit pas etre vide",
+                      },
+                    ]}
+                  >
+                    <select>
+                      <option></option>
+                    </select>
+                  </Form.Item>
+      
+                  <Form.Item
+                    name="message"
+                    label={<span className="requis">Message</span>}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Message ne doit pas etre vide",
+                      },
+                    ]}
+                  >
+                    <Input.TextArea maxLength="750" rows="5" />
+                  </Form.Item>
+                </Form>
+                </> : <div className={"text-center"} key={'ops' + Math.random()}>
+                        <LazyLoadImage src={"/images/logo.png"} width={'65px'} alt={"bagzee"}/>
+                        <p className={"text-danger pt-2"}>
+                            {user ? JSON.stringify(e) : 'vous devez vous connecter'}
+
+                        </p>
+
+                    </div>}
+              </Modal>
+            );
+        }
+
+        const CollectionsPageCause = (props) => {
+            const [visibleCause, setVisibleCause] = useState(false);
+            const onCreateCause = (values) => {
+              axios
+                .post(`api/order/partenaire/refuser`, {
+                  token: this.state.token,
+                  id: props.order,
+                  cause: values.cause,
+                })
+                .then(function (res) {
+                  const modal = Modal.success({
+                    content: (
+                      <div
+                        className={"text-center"}
+                        key={"cancel-order-" + Math.random()}
+                      >
+                        <LazyLoadImage
+                          src={"/images/logo.png"}
+                          width={"65px"}
+                          alt={"bagzee"}
+                        />
+      
+                        <p className={"text-success pt-2"}>{res.data.message}</p>
+                      </div>
+                    ),
+                    okText: "ok",
+                  });
+                  setTimeout(() => {
+                    modal.destroy();
+                  }, 5000);
+                });
+              window.location.reload(false);
+      
+              setVisibleCause(false);
+            };
+      
+            return (
+              <span>
+                <div
+                  onClick={() => {
+                    setVisibleCause(true);
+                  }}
+                  style={{ cursor: "pointer" }}
+                  className={"mb-0 text-gris"}
+                >
+                  {t("btns.signaler")}
+                </div>
+                <CollectionCreateFormCause
+                  key={"annuler-order-" + Math.random()}
+                  visibleCause={visibleCause}
+                  onCreateCause={onCreateCause}
+                  onCancelCause={() => {
+                    setVisibleCause(false);
+                  }}
+                />
+              </span>
+            );
+          };
 
         const onCheckboxChangeAss = (event, price) => {
             const target = event.target;
@@ -585,67 +833,80 @@ class RecapAnnonceDemandeConfierBagage extends Component {
             const {currentUser} = useContext(AuthContext);
             return (
                 <div onClick={async () => {
-                    let myUser = {};
-                    try {
-                        const q = query(
-                            collection(db, "users"),
-                            where("email", "==", emailClient) //order.client.email
-                        );
-                        const querySnapshot = await getDocs(q);
-                        console.log("querySnapshot", querySnapshot);
+                    if (!user?.client?.token || user?.client?.isPointRelais) {
+                        Modal.success({
+                            content: (
+                                <div className={"text-center"} key={'ops' + Math.random()}>
+                                    <LazyLoadImage src={"/images/logo.png"} width={'65px'} alt={"bagzee"}/>
+                                    <p className={"text-danger pt-2"}>
+                                        vous devez vous connecter
+                                    </p>
 
-                        querySnapshot.forEach((doc) => {
-                            myUser = doc.data();
-                            console.log(doc.data());
+                                </div>),
+                            okText: 'ok',
                         });
-                    } catch (e) {
-                        console.log(e);
-                    }
-                    const combinedId =
-                        currentUser.uid > myUser.uid
-                            ? currentUser.uid + myUser.uid
-                            : myUser.uid + currentUser.uid;
-                    try {
-                        const res = await getDoc(doc(db, "chats", combinedId));
-                        console.log("combinedId", combinedId);
-                        console.log("res", res);
-                        if (!res.exists()) {
-                            //create a chat in chats collection
-                            await setDoc(doc(db, "chats", combinedId), {messages: []});
+                    } else {
+                        let myUser = {};
+                        try {
+                            const q = query(
+                                collection(db, "users"),
+                                where("email", "==", emailClient) //order.client.email
+                            );
+                            const querySnapshot = await getDocs(q);
+                            console.log("querySnapshot", querySnapshot);
 
-                            //create user chats
-                            await updateDoc(doc(db, "userChats", currentUser.uid), {
-                                [combinedId + ".userInfo"]: {
-                                    uid: myUser.uid,
-                                    displayName: myUser.displayName,
-                                    photoURL: myUser.photoURL ? myUser.photoURL : "/images/avatar-person.png"
-
-                                },
-                                [combinedId + ".date"]: serverTimestamp(),
+                            querySnapshot.forEach((doc) => {
+                                myUser = doc.data();
+                                console.log(doc.data());
                             });
-
-                            await updateDoc(doc(db, "userChats", myUser.uid), {
-                                [combinedId + ".userInfo"]: {
-                                    uid: currentUser.uid,
-                                    displayName: currentUser.displayName,
-                                    photoURL: currentUser.photoURL ? currentUser.photoURL : "/images/avatar-person.png",
-                                },
-                                [combinedId + ".date"]: serverTimestamp(),
-                            });
-
-                            this.setState({myUser: myUser,  orderInfo:myReservation}, () => {
-                                console.log(this.state.orderInfo)
-                                this.setState({redirectChat: true});
-                            });
+                        } catch (e) {
+                            console.log(e);
                         }
-                        else {
-                            this.setState({myUser: myUser, orderInfo:myReservation}, () => {
-                                console.log(this.state.orderInfo)
-                                this.setState({redirectChat: true});
-                            });
+                        const combinedId =
+                            currentUser.uid > myUser.uid
+                                ? currentUser.uid + myUser.uid
+                                : myUser.uid + currentUser.uid;
+                        try {
+                            const res = await getDoc(doc(db, "chats", combinedId));
+                            console.log("combinedId", combinedId);
+                            console.log("res", res);
+                            if (!res.exists()) {
+                                //create a chat in chats collection
+                                await setDoc(doc(db, "chats", combinedId), {messages: []});
+
+                                //create user chats
+                                await updateDoc(doc(db, "userChats", currentUser.uid), {
+                                    [combinedId + ".userInfo"]: {
+                                        uid: myUser.uid,
+                                        displayName: myUser.displayName,
+                                        photoURL: myUser.photoURL ? myUser.photoURL : "/images/avatar-person.png"
+
+                                    },
+                                    [combinedId + ".date"]: serverTimestamp(),
+                                });
+
+                                await updateDoc(doc(db, "userChats", myUser.uid), {
+                                    [combinedId + ".userInfo"]: {
+                                        uid: currentUser.uid,
+                                        displayName: currentUser.displayName,
+                                        photoURL: currentUser.photoURL ? currentUser.photoURL : "/images/avatar-person.png",
+                                    },
+                                    [combinedId + ".date"]: serverTimestamp(),
+                                });
+
+                                this.setState({myUser: myUser, orderInfo: myReservation}, () => {
+                                    console.log(this.state.orderInfo)
+                                    this.setState({redirectChat: true});
+                                });
+                            } else {
+                                this.setState({myUser: myUser, orderInfo: myReservation}, () => {
+                                    console.log(this.state.orderInfo)
+                                    this.setState({redirectChat: true});
+                                });
+                            }
+                        } catch (err) {
+                            console.log(err);
                         }
-                    } catch (err) {
-                        console.log(err);
                     }
                 }} className={"mb-0 text-orange pointer"} >{t('btns.contacter')}</div>
 
@@ -680,7 +941,11 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                         <Header/>
                         <section className={'depotAnnonce container text-center py-5'}>
 
-                            <p className={'text-dark-blue'}>{t('circuit_depot_annonce.recapAnn')}</p>
+                            <p className={'text-dark-blue'}>
+                                {t('circuit_depot_annonce.recapAnn')}
+                                {myReservation.url_vehicule ?
+                                    <LazyLoadImage src={myReservation.url_vehicule} alt={"vehiclue"} style={{borderRadius:30,width:"15%",float:'right'}}/>:null}
+                            </p>
 
                             <div className={"recapBorderedBlock"}>
                                 <div className={"d-flex flex-column flex-lg-row"}>
@@ -875,7 +1140,7 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                             className={'d-flex flex-md-row flex-column justify-content-between'}>
                                                                 <span>
                                                                     <LazyLoadImage src={"/images/poids.png"}
-                                                                                   alt={'poids'}/> <sub>{myReservation.dimensionsKg} Kg</sub>
+                                                                                   alt={'poids'}/> <sub>{myReservation.dimensionsKg}</sub>
                                                                 </span>
                                             <span>
                                                                     {myReservation.objectType.includes("Bagage") ?
@@ -1051,7 +1316,7 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                     <div className={'col-md-7'}>
                                         <p className={'text-left'}>{t('circuit_depot_annonce.contenuRefuse')}</p>
                                         <div className={"recapBorderedBlock p-3"} style={{borderRadius: 50}}>
-                                            {contenuRefuse?.map(cont =>
+                                            {typeof contenuRefuse !== "string" && contenuRefuse?.map(cont =>
                                                 <label className={'bttn m-2'} style={{
                                                     backgroundColor: '#53BFED',
                                                     color: 'white',
@@ -1333,9 +1598,25 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                             {depart.isIndifferent ? <div className={'col-12 text-left'}>
                                                 <label>{t('page_home.ville_depart_propose')}
                                                 </label>
-                                                <input type={"text"} name={"ville_depart"}
-                                                       value={this.state.bagages.ville_depart}
-                                                       onChange={this.handleChangeDescBagage}/>
+                                                <Autocomplete value={this.state.bagages.ville_depart}
+                                                              placeholder={''}
+                                                              name={"ville_depart"}
+                                                              apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                              options={{
+                                                                  types: ["locality"],
+                                                                  componentRestrictions: { country: "fr" },
+                                                              }}
+                                                              onPlaceSelected={(place) => {
+                                                                  place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                      this.setState(prevState => ({
+                                                                          bagages: {
+                                                                              ...prevState.bagages,    // keep all other key-value pairs
+                                                                              ville_depart: res.long_name
+                                                                          },
+                                                                      }), () => console.log(place)) : null);
+                                                              }}
+                                                              required onChange={this.handleChangeDescBagage}/>
+
 
                                             </div> : depart.isAutre ?
                                                 <Autocomplete
@@ -1371,9 +1652,24 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                         {depart.isPointRelais ? <div className={'text-left mb-2'}>
                                                             <label>{t('page_home.ville_depart_propose')}
                                                             </label>
-                                                            <input type={"text"} name={"ville_depart"}
-                                                                   value={this.state.bagages.ville_depart}
-                                                                   onChange={this.handleChangeDescBagage}/>
+                                                            <Autocomplete value={this.state.bagages.ville_depart}
+                                                                          placeholder={''}
+                                                                          name={"ville_depart"}
+                                                                          apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                                          options={{
+                                                                              types: ["locality"],
+                                                                              componentRestrictions: { country: "fr" },
+                                                                          }}
+                                                                          onPlaceSelected={(place) => {
+                                                                              place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                                  this.setState(prevState => ({
+                                                                                      bagages: {
+                                                                                          ...prevState.bagages,    // keep all other key-value pairs
+                                                                                          ville_depart: res.long_name
+                                                                                      },
+                                                                                  }), () => console.log(place)) : null);
+                                                                          }}
+                                                                          required onChange={this.handleChangeDescBagage}/>
                                                         </div> : null}
                                                         <select name={"adresse_point_depart"}
                                                                 value={(depart.isPointRelais && this.state.depart.nomEntreprise) ?
@@ -1435,6 +1731,24 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                                     ) : null}
                                                         </select>
                                                     </div> : null}
+
+                                                    {depart.isPointRelais ?
+                                                            <div
+                                                                className={"btnCustomColor mb-3 text-gris border-blue bg-transparent w-50 mx-auto"}
+                                                                style={{minWidth: "max-content", maxWidth: '100%'}}>
+                                                                {this.state.settingPriceDep?.filter(val => val.isRelais == true).map(setting =>
+                                                                    <div
+                                                                        className={'d-flex justify-content-between py-2'}>
+                                                                        <Checkbox className={'text-gris'}
+                                                                                  name={'dep-' + setting.name}
+                                                                                  checked={setting.checked}
+                                                                                  onChange={(e) => this.onCheckboxChangeAssDep(e, setting.price)}
+                                                                        >
+                                                                            {setting.name}
+                                                                        </Checkbox>
+                                                                        <span>{setting.price ? setting.price + '€' : '_'}</span>
+                                                                    </div>
+                                                                )}</div> : null}
 
                                         </div>
                                     </div>
@@ -1661,9 +1975,25 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                             {arrivee.isIndifferent ? <div className={'col-12 text-left'}>
                                                 <label>{t('page_home.ville_arrivee_propose')}
                                                 </label>
-                                                <input type={"text"} name={"ville_arrivee"}
-                                                       value={this.state.bagages.ville_arrivee}
-                                                       onChange={this.handleChangeDescBagage}/>
+                                                <Autocomplete value={this.state.bagages.ville_arrivee}
+                                                              placeholder={''}
+                                                              name={"ville_arrivee"}
+                                                              apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                              options={{
+                                                                  types: ["locality"],
+                                                                  componentRestrictions: { country: "fr" },
+                                                              }}
+                                                              onPlaceSelected={(place) => {
+                                                                  place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                      this.setState(prevState => ({
+                                                                          bagages: {
+                                                                              ...prevState.bagages,    // keep all other key-value pairs
+                                                                              ville_arrivee: res.long_name
+                                                                          },
+                                                                      }), () => console.log(place)) : null);
+                                                              }}
+                                                              required onChange={this.handleChangeDescBagage}/>
+
 
                                             </div> : arrivee.isAutre ?
                                                 <Autocomplete
@@ -1701,9 +2031,25 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                             <div className={'text-left mb-2'}>
                                                                 <label>{t('page_home.ville_arrivee_propose')}
                                                                 </label>
-                                                                <input type={"text"} name={"ville_arrivee"}
-                                                                       value={this.state.bagages.ville_arrivee}
-                                                                       onChange={this.handleChangeDescBagage}/>
+                                                                <Autocomplete value={this.state.bagages.ville_arrivee}
+                                                                              name={"ville_arrivee"}
+                                                                              placeholder={''}
+                                                                              apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                                              options={{
+                                                                                  types: ["locality"],
+                                                                                  componentRestrictions: { country: "fr" },
+                                                                              }}
+                                                                              onPlaceSelected={(place) => {
+                                                                                  place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                                      this.setState(prevState => ({
+                                                                                          bagages: {
+                                                                                              ...prevState.bagages,    // keep all other key-value pairs
+                                                                                              ville_arrivee: res.long_name
+                                                                                          },
+                                                                                      }), () => console.log(place)) : null);
+                                                                              }}
+                                                                              required onChange={this.handleChangeDescBagage}/>
+
                                                             </div> : null}
                                                         <select name={"adresse_point_arrivee"}
                                                                 value={(arrivee.isPointRelais && this.state.arrivee.nomEntreprise) ?
@@ -1763,13 +2109,30 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                                     ) : null}
                                                         </select>
                                                     </div> : null}
+                                                    {arrivee.isPointRelais ?
+                                                            <div
+                                                                className={"btnCustomColor mb-3 text-gris border-blue bg-transparent w-50 mx-auto"}
+                                                                style={{minWidth: "max-content", maxWidth: '100%'}}>
+                                                                {this.state.settingPriceArr.filter(val => val.isRelais == true).map(setting =>
+                                                                    <div
+                                                                        className={'d-flex justify-content-between py-2'}>
+                                                                        <Checkbox className={'text-gris'}
+                                                                                  name={'arr-' + setting.name}
+                                                                                  checked={setting.checked}
+                                                                                  onChange={(e) => this.onCheckboxChangeAssArr(e, setting.price)}
+                                                                        >
+                                                                            {setting.name}
+                                                                        </Checkbox>
+                                                                        <span>{setting.price ? setting.price + '€' : '_'}</span>
+                                                                    </div>
+                                                                )}</div> : null}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className={"recapBorderedBlock text-left px-5 py-4 my-4"}>
                                 <p className={'text-left'}>{t('circuit_depot_annonce.galerie')}</p>
-                                {this.state.mesBagages?.map(bgg=><Checkbox checked={bgg.checked} className={"checkMeInImg"} name={bgg.url} onChange={(e)=>{
+                                {this.state.mesBagages?.map(bgg=><Checkbox checked={bgg.checked} className={fileList.length >= 10?"checkMeInImg disabled":"checkMeInImg"} name={bgg.url} onChange={(e)=>{
                                     console.log(e)
                                     this.setState(prev=>({
                                         mesBagages:prev.mesBagages.map(item=>
@@ -1853,7 +2216,9 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                             }}/>}
                                                     </div>
                                                     <p className={'d-flex flex-column justify-content-around align-items-center mb-0'}>
-                                                        <span>{myReservation.client.firstName}</span>
+                                                    <Link to={`/mes-avis-${myReservation.client.firstName.replace(/[^a-zA-Z0-9 ]/g, '').replace(" ", "")}-${myReservation.client.id}`}>
+                                                        <span style={{color:"#000"}}>{myReservation.client.firstName}</span>
+                                                    </Link>
                                                         <div>
                                             <span
                                                 className={'text-orange mr-2'}>{this.state.infoAvis ? this.state.infoAvis.total : 0}</span>
@@ -1875,7 +2240,9 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                 <div className={"mb-0"}>
                                                     <hr style={{width: '100%', borderColor: '#eaeaea'}}/>
                                                 </div>
-                                                <div className={"mb-0 text-gris"}>{t('btns.signaler')}</div>
+                                                <CollectionsPageCause
+                          order={this.props.match.params.id}
+                        />
                                             </div>
                                         </div>
                                     </div>
@@ -1904,7 +2271,7 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                     </label>
                                                 </div>
 
-                                                {this.state.setting_price.map(setting =>
+                                                {this.state.setting_price.filter(setting => setting.name !== "mutuel").filter(setting => setting.name !== "stockage").map(setting =>
                                                     <div className={'d-flex justify-content-between py-2'}>
                                                         <Checkbox className={'text-gris'} name={setting.name}
                                                                   style={{pointerEvents: 'auto'}}
@@ -1915,6 +2282,27 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                                         </Checkbox>
                                                         <span>{setting.price ? setting.price + '€' : '_'}</span>
                                                     </div>)}
+
+                                                    {objDep.filter(val => val.isRelais == true && val.checked == true).map(setting =>
+                                            <div className={'d-flex justify-content-between py-2 demandeListeProp'}>
+                                                <Checkbox className={'text-gris'} name={setting.name}
+                                                          style={{pointerEvents: 'none'}}
+                                                          checked={setting.checked}
+                                                >
+                                                    {setting.name}
+                                                </Checkbox>
+                                                <span>{setting.price ? setting.price + '€' : '_'}</span>
+                                            </div>)}
+                                        {objArr.filter(val => val.isRelais == true && val.checked == true).map(setting =>
+                                            <div className={'d-flex justify-content-between py-2 demandeListeProp'}>
+                                                <Checkbox className={'text-gris'} name={setting.name}
+                                                          style={{pointerEvents: 'none'}}
+                                                          checked={setting.checked}
+                                                >
+                                                    {setting.name}
+                                                </Checkbox>
+                                                <span>{setting.price ? setting.price + '€' : '_'}</span>
+                                            </div>)}
                                             </>
                                             : null}
                                     </div>
@@ -1937,8 +2325,24 @@ class RecapAnnonceDemandeConfierBagage extends Component {
                                     </div>
                                     <button
                                         disabled={
-                                            this.state.disabled || !this.state.isUploaded || !user?.client?.token || user?.client?.isPointRelais ? true : false}
-                                        onClick={() => this.soumettre()}
+                                            this.state.disabled || !this.state.isUploaded || !user  ? true : false}
+                                        onClick={() => {
+                                            if(!user?.client?.token || user?.client?.isPointRelais){
+                                                Modal.success({
+                                                    content: (
+                                                        <div className={"text-center"} key={'ops' + Math.random()}>
+                                                            <LazyLoadImage src={"/images/logo.png"} width={'65px'} alt={"bagzee"}/>
+                                                            <p className={"text-danger pt-2"}>
+                                                                 vous devez vous connecter
+                                                            </p>
+
+                                                        </div>),
+                                                    okText: 'ok',
+                                                });
+                                            }else {
+                                                this.soumettre()
+                                            }
+                                        }}
                                         className={"btnBlue w-100"}>{t('btns.soumettreDemandePorteur')} </button>
                                 </div>
                             </div>
