@@ -32,7 +32,7 @@ class PorterLieuRetrait extends Component {
                 heure: '',
                 date: '',
 
-                isPointRelais: true,
+                isPointRelais: false,
                 isDomicile: false,
                 isAutre: false,
                 isIndifferent: false,
@@ -46,7 +46,7 @@ class PorterLieuRetrait extends Component {
                 heure: '',
                 date: '',
 
-                isPointRelais: true,
+                isPointRelais: false,
                 isDomicile: false,
                 isAutre: false,
                 isIndifferent: false,
@@ -108,78 +108,104 @@ class PorterLieuRetrait extends Component {
         })
 
         if (this.props.location.state) {
-            axios.get('api/baggagite/get/' + this.props.location.state.id).then(res => {
-                let baggagiste = res.data.baggagiste
-                let placeholderdepart = baggagiste.type_adresse_depart == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
-                    baggagiste.type_adresse_depart == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
-                        baggagiste.type_adresse_depart == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
-                            baggagiste.type_adresse_depart == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
-                let placeholderarrivee = baggagiste.type_adresse_arrivee == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
-                    baggagiste.type_adresse_arrivee == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
-                        baggagiste.type_adresse_arrivee == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
-                            baggagiste.type_adresse_arrivee == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
-                this.setState(prevState => ({
-                    idPointRelaisDep: baggagiste.idPointRelaisDep,
-                    idPointRelaisArr: baggagiste.idPointRelaisArr,
-                    adresse_point_depart: baggagiste.adresse_point_depart,
-                    lat_adresse_point_depart: baggagiste.lat_adresse_point_depart,
-                    long_adresse_point_depart: baggagiste.long_adresse_point_depart,
-                    adresse_point_arrivee: baggagiste.adresse_point_arrivee,
-                    lat_adresse_point_arrivee: baggagiste.lat_adresse_point_arrivee,
-                    long_adresse_point_arrivee: baggagiste.long_adresse_point_arrivee,
-                    price: baggagiste.price,
-                    contenuRefuse: baggagiste.contenuRefuse,
-                    depart: {
-                        ...prevState.depart,    // keep all other key-value pairs
-                        nomEntreprise: baggagiste.type_adresse_depart == "Point relais" && baggagiste.nomEntrepriseDep,
-                        ville_depart: baggagiste.ville_depart,
-                        heure: baggagiste.heureDepart,
-                        date: baggagiste.dateDepart,
-                        isPointRelais: baggagiste.type_adresse_depart == "Point relais" ? true : false,
-                        isDomicile: baggagiste.type_adresse_depart == "Domicile" ? true : false,
-                        isAutre: baggagiste.type_adresse_depart == "Autre lieux" ? true : false,
-                        isIndifferent: baggagiste.type_adresse_depart == "Indifferent" ? true : false,
-                        placeHolderSelect: placeholderdepart,
-                    },
-                    arrivee: {
-                        ...prevState.arrivee,    // keep all other key-value pairs
-                        nomEntreprise: baggagiste.type_adresse_arrivee == "Point relais" && baggagiste.nomEntrepriseArr,
-                        ville_arrivee: baggagiste.ville_arrivee,
-                        heure: baggagiste.heureArrivee,
-                        date: baggagiste.dateArrivee,
-                        isPointRelais: baggagiste.type_adresse_arrivee == "Point relais" ? true : false,
-                        isDomicile: baggagiste.type_adresse_arrivee == "Domicile" ? true : false,
-                        isAutre: baggagiste.type_adresse_arrivee == "Autre lieux" ? true : false,
-                        isIndifferent: baggagiste.type_adresse_arrivee == "Indifferent" ? true : false,
-                        placeHolderSelect: placeholderarrivee,
-                    },
-                    espace: {
-                        ...prevState.espace,    // keep all other key-value pairs
-                        dimensionsLong: baggagiste.dimensionsLong,
-                        dimensionsH: baggagiste.dimensionsH,
-                        dimensionsLarg: baggagiste.dimensionsLarg,
-                        commentaires: baggagiste.commentaire,
-                        dimensionsKg: baggagiste.dimensionsKg,
-                        isBagage: baggagiste.objectType.includes("Bagage") ? true : false,
-                        isSacDos: baggagiste.objectType.includes("Sac à dos") ? true : false,
-                        isHorsFormat: baggagiste.objectType.includes("Hors format") ? true : false,
-                        isPetitObj: baggagiste.objectType.includes("Petits objets") ? true : false,
-                        isIndifferent: baggagiste.objectType.includes("Indifferent") ? true : false,
-                        isChat: baggagiste.objectType.includes("Chat") ? true : false,
-                        isVoiture: baggagiste.objectTransport.includes("Voiture") ? true : false,
-                        isCar: baggagiste.objectTransport.includes("Car") ? true : false,
-                        isCamion: baggagiste.objectTransport.includes("Camion") ? true : false,
-                        isAvion: baggagiste.objectTransport.includes("Avion") ? true : false,
-                        isTrain: baggagiste.objectTransport.includes("Train") ? true : false,
-                        isBateau: baggagiste.objectTransport.includes("Bateau") ? true : false,
-                        isIndifferentV: baggagiste.objectTransport.includes("IndifferentV") ? true : false,
-                    },
-                }), () => {
-                    this.setState({loading: false})
-                    console.log(this.state.contenuRefuse)
-                });
+            axios.post('api/vehicule/list', {token: user?.client?.token}).then(res => {
+                if (res.data.status)
+                    this.setState({
+                        vehicule: res.data.vehicules,
+
+                        nom_vehicule: res.data.vehicules.nom_vehicule
+                    }, () => {
+                        axios.get('api/baggagite/get/' + this.props.location.state.id).then(res => {
+                            let baggagiste = res.data.baggagiste
+                            let placeholderdepart = baggagiste.type_adresse_depart == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
+                                baggagiste.type_adresse_depart == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
+                                    baggagiste.type_adresse_depart == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
+                                        baggagiste.type_adresse_depart == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
+                            let placeholderarrivee = baggagiste.type_adresse_arrivee == "Point relais" ? this.props.t('circuit_depot_annonce.point_relais') :
+                                baggagiste.type_adresse_arrivee == "Domicile" ? this.props.t('circuit_depot_annonce.domicile') :
+                                    baggagiste.type_adresse_arrivee == "Autre lieux" ? this.props.t('circuit_depot_annonce.autreLieu') :
+                                        baggagiste.type_adresse_arrivee == "Indifferent" ? this.props.t('circuit_depot_annonce.indifferent') : this.props.t('circuit_depot_annonce.point_relais')
+                            this.setState(prevState => ({
+                                idPointRelaisDep: baggagiste.idPointRelaisDep,
+                                idPointRelaisArr: baggagiste.idPointRelaisArr,
+                                adresse_point_depart: baggagiste.adresse_point_depart,
+                                lat_adresse_point_depart: baggagiste.lat_adresse_point_depart,
+                                long_adresse_point_depart: baggagiste.long_adresse_point_depart,
+                                adresse_point_arrivee: baggagiste.adresse_point_arrivee,
+                                canDepose: baggagiste.canDepose,
+                                statusAnn: baggagiste.status,
+                                lat_adresse_point_arrivee: baggagiste.lat_adresse_point_arrivee,
+                                long_adresse_point_arrivee: baggagiste.long_adresse_point_arrivee,
+                                price: baggagiste.price,
+                                contenuRefuse: baggagiste.contenuRefuse,
+                                vehicule: {
+                                    ...prevState.vehicule,
+                                    url: baggagiste.url_vehicule ? baggagiste.url_vehicule : this.state.vehicule.url,
+                                    checked: baggagiste.url_vehicule ? true : false
+                                },
+                                depart: {
+                                    ...prevState.depart,    // keep all other key-value pairs
+                                    nomEntreprise: baggagiste.type_adresse_depart == "Point relais" && baggagiste.nomEntrepriseDep,
+                                    ville_depart: baggagiste.ville_depart,
+                                    heure: baggagiste.heureDepart,
+                                    date: baggagiste.dateDepart,
+                                    isPointRelais: baggagiste.type_adresse_depart == "Point relais" ? true : false,
+                                    isDomicile: baggagiste.type_adresse_depart == "Domicile" ? true : false,
+                                    isAutre: baggagiste.type_adresse_depart == "Autre lieux" ? true : false,
+                                    isIndifferent: baggagiste.type_adresse_depart == "Indifferent" ? true : false,
+                                    placeHolderSelect: placeholderdepart,
+                                },
+                                arrivee: {
+                                    ...prevState.arrivee,    // keep all other key-value pairs
+                                    nomEntreprise: baggagiste.type_adresse_arrivee == "Point relais" && baggagiste.nomEntrepriseArr,
+                                    ville_arrivee: baggagiste.ville_arrivee,
+                                    heure: baggagiste.heureArrivee,
+                                    date: baggagiste.dateArrivee,
+                                    isPointRelais: baggagiste.type_adresse_arrivee == "Point relais" ? true : false,
+                                    isDomicile: baggagiste.type_adresse_arrivee == "Domicile" ? true : false,
+                                    isAutre: baggagiste.type_adresse_arrivee == "Autre lieux" ? true : false,
+                                    isIndifferent: baggagiste.type_adresse_arrivee == "Indifferent" ? true : false,
+                                    placeHolderSelect: placeholderarrivee,
+                                },
+                                espace: {
+                                    ...prevState.espace,    // keep all other key-value pairs
+                                    dimensionsLong: baggagiste.dimensionsLong,
+                                    dimensionsH: baggagiste.dimensionsH,
+                                    dimensionsLarg: baggagiste.dimensionsLarg,
+                                    commentaires: baggagiste.commentaire,
+                                    dimensionsKg: baggagiste.dimensionsKg,
+                                    isBagage: baggagiste.objectType.includes("Bagage") ? true : false,
+                                    isSacDos: baggagiste.objectType.includes("Sac à dos") ? true : false,
+                                    isHorsFormat: baggagiste.objectType.includes("Hors format") ? true : false,
+                                    isPetitObj: baggagiste.objectType.includes("Petits objets") ? true : false,
+                                    isIndifferent: baggagiste.objectType.includes("Indifferent") ? true : false,
+                                    isChat: baggagiste.objectType.includes("Chat") ? true : false,
+                                    isVoiture: baggagiste.objectTransport.includes("Voiture") ? true : false,
+                                    isCar: baggagiste.objectTransport.includes("Car") ? true : false,
+                                    isCamion: baggagiste.objectTransport.includes("Camion") ? true : false,
+                                    isAvion: baggagiste.objectTransport.includes("Avion") ? true : false,
+                                    isTrain: baggagiste.objectTransport.includes("Train") ? true : false,
+                                    isBateau: baggagiste.objectTransport.includes("Bateau") ? true : false,
+                                    isIndifferentV: baggagiste.objectTransport.includes("IndifferentV") ? true : false,
+                                },
+                            }), () => {
+                                this.setState({loading: false})
+                                console.log(this.state.contenuRefuse)
+                            });
 
 
+                        })
+                    })
+            })
+        } else {
+            axios.post('api/vehicule/list', {token: user?.client?.token}).then(res => {
+                if (res.data.status)
+                    this.setState({
+                        vehicule: res.data.vehicules,
+
+                        nom_vehicule: res.data.vehicules.nom_vehicule
+                    }, () => {
+                    })
             })
         }
         if (user) {
@@ -235,6 +261,7 @@ class PorterLieuRetrait extends Component {
                     arrivee.isIndifferent ? type_adresse_arrivee = "Indifferent" : null
         axios.post(this.props.location.state ? 'api/baggagite/update' : 'api/baggagite/create', {
             id: this.props.location.state ? this.props.location.state.id : null,
+            statusAnn: this.state.status,
             canDepose: this.state.canDepose,
             idPointRelaisDep: this.state.idPointRelaisDep,
             idPointRelaisArr: this.state.idPointRelaisArr,
@@ -255,6 +282,7 @@ class PorterLieuRetrait extends Component {
             toTime: arrivee.heure,
             dimensionsLong: espace.dimensionsLong,
             commentaire: espace.commentaires,
+            vehicule: this.state.vehicule?.checked ? this.state.vehicule?.url : "",
             dimensionsH: espace.dimensionsH,
             dimensionsLarg: espace.dimensionsLarg,
             dimensionsKg: espace.dimensionsKg,
@@ -272,7 +300,8 @@ class PorterLieuRetrait extends Component {
                     content: (
                         <div className={"text-center"} key={'reservation-modal-' + Math.random()}>
                             <div>
-                                <FontAwesomeIcon icon={faTimes}/>
+                                <FontAwesomeIcon icon={faTimes} fontSize={60}
+                                                 color={'red'}/>
                                 <p style={{color: '#8D8D8D'}} className={"pt-2"}>
                                     {res.data.message}
                                 </p>
@@ -286,13 +315,14 @@ class PorterLieuRetrait extends Component {
 
             Modal.success({
                 content: (
-                    <div className={"text-center"} key={'ops' + Math.random()}>
-                        <LazyLoadImage src={"/images/logo.png"} width={'65px'} alt={"bagzee"}/>
-                        <p className={"text-danger pt-2"}>
-                            {user ? JSON.stringify(e) : 'vous devez vous connecter'}
-
-                        </p>
-
+                    <div className={"text-center"} key={'reservation-modal-' + Math.random()}>
+                        <div>
+                            <FontAwesomeIcon icon={faTimes} fontSize={60}
+                                             color={'red'}/>
+                            <p style={{color: '#8D8D8D'}} className={"pt-2"}>
+                                {res.data.message}
+                            </p>
+                        </div>
                     </div>),
                 okText: 'ok',
             });
@@ -329,7 +359,7 @@ class PorterLieuRetrait extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
+        console.log(value)
         this.setState(prevState => ({
             arrivee: {
                 ...prevState.arrivee,    // keep all other key-value pairs
@@ -470,19 +500,23 @@ class PorterLieuRetrait extends Component {
         };
 
         if (this.state.redirect) {
-            return <Redirect to={{pathname: '/annonces', state: {status: this.state.status,statusName:this.state.status==1&&t("page_annonce.ann_enCours")}}}/>;
+            return <Redirect to={{
+                pathname: '/annonces',
+                state: {status: this.state.status, statusName: this.state.status == 1 && t("page_annonce.ann_enCours")}
+            }}/>;
         } else {
             return (
                 <div>
                     <Header/>
                     <div className={"depotAnnonce container text-center"}>
                         {user ? null :
-                            <p className={"text-danger mb-3  py-5"}>Vous devez vous connecter afin de poster l'annonce.</p>}
+                            <p className={"text-danger mb-3  py-5"}>Vous devez vous connecter afin de poster
+                                l'annonce.</p>}
 
                     </div>
 
                     {etape == 1 ?
-                        <section className={'depotAnnonce container text-center'} >
+                        <section className={'depotAnnonce container text-center'}>
                             <div className={'etapes d-flex flex-row justify-content-center align-items-center'}>
                                 <span className={'circle'}>1</span>
                                 <span className={'tiretCircle'}/>
@@ -492,8 +526,8 @@ class PorterLieuRetrait extends Component {
                                 <span className={'tiretCircle'}/>
                                 <span className={'circleOutline'}>4</span>
                             </div>
-                            {/* <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuRetrait')}</p>
-                            <LazyLoadImage src={"/images/imgPorterLieuRetrait.png"} className={'my-3'}
+                            <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuRetrait')}</p>
+                            {/*  <LazyLoadImage src={"/images/imgPorterLieuRetrait.png"} className={'my-3'}
                                            alt={"imgPorterLieuRetrait"}/> */}
                             <div className={'row mx-auto'} style={{maxWidth: 800}}>
 
@@ -522,12 +556,13 @@ class PorterLieuRetrait extends Component {
                                             isDomicile: false,
                                             isAutre: false,
                                             isIndifferent: false,
-                                            ville_depart:''
+                                            ville_depart: ''
                                         },
+                                        idPointRelaisDep: '',
                                         adresse_point_depart: '',
                                         lat_adresse_point_depart: 0,
                                         long_adresse_point_depart: 0
-                                    }))
+                                    }), () => console.log(this.state.adresse_point_depart))
                                 }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="39.985" height="42.41"
                                          viewBox="0 0 42.985 45.41">
@@ -581,12 +616,13 @@ class PorterLieuRetrait extends Component {
                                             placeHolderSelect: t('circuit_depot_annonce.domicile'),
                                             isAutre: false,
                                             isIndifferent: false,
-                                            ville_depart:''
+                                            ville_depart: ''
                                         },
+                                        idPointRelaisDep: '',
                                         adresse_point_depart: '',
                                         lat_adresse_point_depart: 0,
                                         long_adresse_point_depart: 0
-                                    }))
+                                    }), () => console.log(this.state.adresse_point_depart))
                                 }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="44.411" height="42.41"
                                          viewBox="0 0 47.411 45.41">
@@ -611,8 +647,9 @@ class PorterLieuRetrait extends Component {
                                             isAutre: true,
                                             placeHolderSelect: t('circuit_depot_annonce.autreLieu'),
                                             isIndifferent: false,
-                                            ville_depart:'',
+                                            ville_depart: '',
                                         },
+                                        idPointRelaisDep: '',
                                         adresse_point_depart: '',
                                         lat_adresse_point_depart: 0,
                                         long_adresse_point_depart: 0
@@ -642,8 +679,9 @@ class PorterLieuRetrait extends Component {
                                             placeHolderSelect: 'indifferent',
                                             isAutre: false,
                                             isIndifferent: true,
-                                            ville_depart:'',
+                                            ville_depart: '',
                                         },
+                                        idPointRelaisDep: '',
                                         adresse_point_depart: '',
                                         lat_adresse_point_depart: 0,
                                         long_adresse_point_depart: 0
@@ -684,109 +722,159 @@ class PorterLieuRetrait extends Component {
 
                                 </div>
                             </div>
-                            {depart.isIndifferent ?   
-                            <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
-                                <label className="requis">{t('page_home.ville_depart')}</label>
-                                <input type={"text"} name={"ville_depart"} value={depart.ville_depart}
-                                       required
-                                       onChange={this.handleChangedepart}/>
+                            {depart.isIndifferent ?
+                                <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
+                                    <label className="requis">{t('page_home.ville_depart')}</label>
+                                    <Autocomplete value={depart.ville_depart}
+                                                  placeholder={''}
+                                                  name={"ville_depart"}
+                                                  apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                  options={{
+                                                      types: ["locality"],
+                                                      componentRestrictions: {country: "fr"},
+                                                  }}
+                                                  onPlaceSelected={(place) => {
+                                                      place.address_components.map(res => res.types[0] == 'locality' ?
+                                                          this.setState(prevState => ({
+                                                              depart: {
+                                                                  ...prevState.depart,    // keep all other key-value pairs
+                                                                  ville_depart: res.long_name
+                                                              },
+                                                          }), () => console.log(place)) : null);
+                                                  }}
+                                                  required onChange={this.handleChangedepart}/>
 
-                            </div> : depart.isAutre ?
-                                <Autocomplete style={{maxWidth: 800}}
-                                              onChange={(e) => this.setState({adresse_point_depart: e.target.value}, () => {
-                                                  console.log(e.target.value)
-                                                  console.log(e)
-                                                  console.log(this.state.adresse_point_depart)
-                                              })}
-                                              value={this.state.adresse_point_depart}
-                                              options={{
-                                                  types: ["geocode", "establishment"],
-                                                  strictBounds: true,
-                                                  componentRestrictions: {country: "fr"},
-                                              }}
-                                              apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
-                                              onPlaceSelected={(place) => {
-                                                  place.address_components.map(res=>res.types[0] == 'locality'?
-                                                      this.setState(prevState => ({
-                                                          depart: {
-                                                              ...prevState.depart,    // keep all other key-value pairs
-                                                              autreLieux: place.formatted_address,
-                                                              ville_depart:res.long_name
-                                                          },
-                                                          adresse_point_depart: place.formatted_address,
-                                                          lat_adresse_point_depart: place.geometry.location.lat(),
-                                                          long_adresse_point_depart: place.geometry.location.lng(),
+                                </div> : depart.isAutre ?
+                                    <Autocomplete style={{maxWidth: 800}}
+                                                  onChange={(e) => this.setState({adresse_point_depart: e.target.value}, () => {
+                                                      console.log(e.target.value)
+                                                      console.log(e)
+                                                      console.log(this.state.adresse_point_depart)
+                                                  })}
+                                                  value={this.state.adresse_point_depart}
+                                                  options={{
+                                                      types: ["geocode", "establishment"],
+                                                      strictBounds: true,
+                                                      componentRestrictions: {country: "fr"},
+                                                  }}
+                                                  apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                  onPlaceSelected={(place) => {
+                                                      place.address_components.map(res => res.types[0] == 'locality' ?
+                                                          this.setState(prevState => ({
+                                                              depart: {
+                                                                  ...prevState.depart,    // keep all other key-value pairs
+                                                                  autreLieux: place.formatted_address,
+                                                                  ville_depart: res.long_name
+                                                              },
+                                                              adresse_point_depart: place.formatted_address,
+                                                              lat_adresse_point_depart: place.geometry.location.lat(),
+                                                              long_adresse_point_depart: place.geometry.location.lng(),
 
-                                                      }),()=>console.log(this.state.depart.ville_depart)):null)
-                                              }}
-                                /> : (depart.isDomicile || depart.isPointRelais) ?
-                                    <div className={'mx-auto'} style={{maxWidth: 800}}>
-                                        {depart.isPointRelais?<div className={'text-left mb-2'}>
-                                            <label className="requis">{t('page_home.ville_depart')}</label>
-                                            <input type={"text"} name={"ville_depart"} value={depart.ville_depart}
-                                                   required
-                                                   onChange={this.handleChangedepart}/>
-
-                                            <br/></div>:null}
-                                        <select name={"adresse_point_depart"}
-                                                value={(depart.isPointRelais && this.state.depart.nomEntreprise) ?
-                                                    !this.state.idPointRelaisDep ? '' : this.state.depart.nomEntreprise + '-' + this.state.adresse_point_depart + '&lat=' + this.state.lat_adresse_point_depart + '&long=' + this.state.long_adresse_point_depart + '&id=' + this.state.idPointRelaisDep
-                                                    : this.state.lat_adresse_point_depart == 0 ? '' :
-                                                        this.state.adresse_point_depart + '&lat=' + this.state.lat_adresse_point_depart + '&long=' + this.state.long_adresse_point_depart}
-                                                onChange={(e) => {
-                                                    if (depart.isDomicile) {
-                                                        let myLat = e.target.value.split('&lat=')[1]
-                                                        myLat = myLat.split('&long=')[0]
-                                                        depart.domicile.map(res=>res.name == e.target.value.split('&lat=')[0]?
-                                                            this.setState(
-                                                                prev=>({
-                                                                    depart:{...prev.depart,
-                                                                        ville_depart:res.ville},
-                                                                    adresse_point_depart: e.target.value.split('&lat=')[0],
-                                                                    lat_adresse_point_depart: myLat,
-                                                                    long_adresse_point_depart: e.target.value.split('&long=')[1],
-                                                                }),()=>{
-                                                                    console.log(this.state.lat_adresse_point_depart)
-                                                                    console.log(this.state.long_adresse_point_depart)
-                                                                }):null)
-                                                    } else {
-                                                        let nomE = e.target.value.split('-')[0]
-                                                        let myLat = e.target.value.split('&lat=')[1]
-                                                        myLat = myLat.split('&long=')[0]
-                                                        let myLng = e.target.value.split('&long=')[1]
-                                                        myLng = myLng.split('&id=')[0]
-                                                        let adr = e.target.value.split('&lat=')[0]
-                                                        this.setState(prev => ({
-                                                            depart: {...prev.depart, nomEntreprise: nomE},
-                                                            adresse_point_depart: adr.split('-')[1],
-                                                            lat_adresse_point_depart: myLat,
-                                                            long_adresse_point_depart: myLng,
-                                                            idPointRelaisDep: e.target.value.split('&id=')[1]
-                                                        }))
-                                                    }
-                                                }}>
-                                            <option key={'-1'} value={''} disabled={true}
-                                                    selected={(depart.isPointRelais && !this.state.idPointRelaisDep) || (depart.isDomicile && !this.state.lat_adresse_point_depart) ? true : false}>{depart.placeHolderSelect}
-                                            </option>
+                                                          }), () => console.log(this.state.depart.ville_depart)) : null)
+                                                  }}
+                                    /> : (depart.isDomicile || depart.isPointRelais) ?
+                                        <div className={'mx-auto'} style={{maxWidth: 800}}>
                                             {depart.isPointRelais ?
-                                                depart.pointRelais.filter(createFilter(depart.ville_depart, KEYS_TO_FILTERSA)).map(lieu =>
-                                                    !lieu.adress.name ? null : <option key={lieu.id}
-                                                                                       value={lieu.nomEntreprise + '-' + lieu.adress.name + '&lat=' + lieu.adress.lat + '&long=' + lieu.adress.lng + '&id=' + lieu.id}>
-                                                        {lieu.nomEntreprise + '-' + lieu.adress.name}
-                                                    </option>
-                                                ) : depart.isDomicile ?
-                                                    depart.domicile.map(lieu =>
-                                                        <option key={lieu.id}
-                                                                value={lieu.name + '&lat=' + lieu.lat + '&long=' + lieu.long}>{lieu.name}</option>
-                                                    ) : null}
-                                        </select>
+                                                <div className={'text-left mb-2'}>
+                                                <label className="requis">{t('page_home.ville_depart')}</label>
+                                                <Autocomplete value={depart.ville_depart}
+                                                              placeholder={''}
+                                                              name={"ville_depart"}
+                                                              apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                              options={{
+                                                                  types: ["locality"],
+                                                                  componentRestrictions: {country: "fr"},
+                                                              }}
+                                                              onPlaceSelected={(place) => {
+                                                                  place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                      this.setState(prevState => ({
+                                                                          depart: {
+                                                                              ...prevState.depart,    // keep all other key-value pairs
+                                                                              ville_depart: res.long_name
+                                                                          },
+                                                                      }), () => console.log(place)) : null);
+                                                              }}
+                                                              required onChange={this.handleChangedepart}/>
 
-                                    </div> : null}
-                            <div
+
+                                                <br/></div> : null}
+                                            <select name={"adresse_point_depart"}
+                                                    value={(depart.isPointRelais && this.state.depart.nomEntreprise) ?
+                                                        !this.state.idPointRelaisDep ? '' : this.state.depart.nomEntreprise + '-' + this.state.adresse_point_depart + '&lat=' + this.state.lat_adresse_point_depart + '&long=' + this.state.long_adresse_point_depart + '&id=' + this.state.idPointRelaisDep
+                                                        : this.state.lat_adresse_point_depart == 0 ? '' :
+                                                            this.state.adresse_point_depart + '&lat=' + this.state.lat_adresse_point_depart + '&long=' + this.state.long_adresse_point_depart}
+                                                    onChange={(e) => {
+                                                        if (depart.isDomicile) {
+                                                            let myLat = e.target.value.split('&lat=')[1]
+                                                            myLat = myLat.split('&long=')[0]
+                                                            depart.domicile.map(res => res.name == e.target.value.split('&lat=')[0] ?
+                                                                this.setState(
+                                                                    prev => ({
+                                                                        depart: {
+                                                                            ...prev.depart,
+                                                                            ville_depart: res.ville
+                                                                        },
+                                                                        adresse_point_depart: e.target.value.split('&lat=')[0],
+                                                                        lat_adresse_point_depart: myLat,
+                                                                        long_adresse_point_depart: e.target.value.split('&long=')[1],
+                                                                    }), () => {
+                                                                        console.log(this.state.depart.ville_depart)
+                                                                        console.log(this.state.lat_adresse_point_depart)
+                                                                        console.log(this.state.long_adresse_point_depart)
+                                                                    }) : null)
+                                                        } else {
+                                                            let nomE = e.target.value.split('-')[0]
+                                                            let myLat = e.target.value.split('&lat=')[1]
+                                                            myLat = myLat.split('&long=')[0]
+                                                            let myLng = e.target.value.split('&long=')[1]
+                                                            myLng = myLng.split('&id=')[0]
+                                                            let adr = e.target.value.split('&lat=')[0]
+                                                            this.setState(prev => ({
+                                                                depart: {...prev.depart, nomEntreprise: nomE},
+                                                                adresse_point_depart: adr.split('-')[1],
+                                                                lat_adresse_point_depart: myLat,
+                                                                long_adresse_point_depart: myLng,
+                                                                idPointRelaisDep: e.target.value.split('&id=')[1]
+                                                            }))
+                                                        }
+                                                    }}>
+                                                <option key={'-1'} value={''} disabled={true}
+                                                        selected={(depart.isPointRelais && !this.state.idPointRelaisDep) || (depart.isDomicile && !this.state.lat_adresse_point_depart) ? true : false}>{depart.placeHolderSelect}
+                                                </option>
+                                                {depart.isPointRelais ?
+                                                    depart.pointRelais.filter(createFilter(depart.ville_depart, KEYS_TO_FILTERSA)).map(lieu =>
+                                                        !lieu.adress.name ? null : <option key={lieu.id}
+                                                                                           value={lieu.nomEntreprise + '-' + lieu.adress.name + '&lat=' + lieu.adress.lat + '&long=' + lieu.adress.lng + '&id=' + lieu.id}>
+                                                            {lieu.nomEntreprise + '-' + lieu.adress.name}
+                                                        </option>
+                                                    ) : depart.isDomicile ?
+                                                        depart.domicile.map(lieu =>
+                                                            <option key={lieu.id}
+                                                                    value={lieu.name + '&lat=' + lieu.lat + '&long=' + lieu.long}>{lieu.name}</option>
+                                                        ) : null}
+                                            </select>
+
+                                        </div> : null}
+                            {this.state.statusAnn ? null : <div
                                 className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
-                                <button onClick={() => this.publier(0)}
+                                <button onClick={() => {
+                                    if (!user?.client?.token || user?.client?.isPointRelais) {
+                                        Modal.success({
+                                            content: (
+                                                <div className={"text-center"} key={'ops' + Math.random()}>
+                                                    <LazyLoadImage src={"/images/logo.png"} width={'65px'}
+                                                                   alt={"bagzee"}/>
+                                                    <p className={"text-danger pt-2"}>
+                                                        vous devez vous connecter
+                                                    </p>
+
+                                                </div>),
+                                            okText: 'ok',
+                                        });
+                                    } else this.publier(0)
+                                }}
                                         className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                            </div>
+                            </div>}
                             <div
                                 className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                 <Link to={'/deposer-annonce'}
@@ -795,15 +883,30 @@ class PorterLieuRetrait extends Component {
                                 <button disabled={
                                     (depart.ville_depart == '' || depart.date == '' || depart.heure == '' || (!depart.isIndifferent && this.state.adresse_point_depart == '')) ? true : false}
                                         onClick={() => {
-                                            window.scrollTo(0, 0);
-                                            this.setState({etape: etape + 1})
+                                            if (user?.client?.isPointRelais) {
+                                                Modal.success({
+                                                    content: (
+                                                        <div className={"text-center"} key={'ops' + Math.random()}>
+                                                            <LazyLoadImage src={"/images/logo.png"} width={'65px'}
+                                                                           alt={"bagzee"}/>
+                                                            <p className={"text-danger pt-2"}>
+                                                                vous devez vous connecter
+                                                            </p>
+
+                                                        </div>),
+                                                    okText: 'ok',
+                                                });
+                                            } else {
+                                                window.scrollTo(0, 0);
+                                                this.setState({etape: etape + 1})
+                                            }
                                         }}
                                         className="btnBlue bttn">{t('btns.suivant')}</button>
                             </div>
 
                         </section> :
                         etape == 2 ?
-                            <section className={'depotAnnonce container text-center'} >
+                            <section className={'depotAnnonce container text-center'}>
                                 <div className={'etapes d-flex flex-row justify-content-center align-items-center'}>
                                     <span className={'circle'}>1</span>
                                     <span className={'tiretCircle'}/>
@@ -813,8 +916,8 @@ class PorterLieuRetrait extends Component {
                                     <span className={'tiretCircle'}/>
                                     <span className={'circleOutline'}>4</span>
                                 </div>
-                                {/* <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuDepot')}</p>
-                                <LazyLoadImage src={"/images/imgPorterLieuDepot.png"} className={'my-3'}
+                                <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuDepot')}</p>
+                                {/*  <LazyLoadImage src={"/images/imgPorterLieuDepot.png"} className={'my-3'}
                                                alt={"imgPorterLieuDepot"}/> */}
                                 <div className={'row mx-auto'} style={{maxWidth: 800}}>
 
@@ -843,7 +946,7 @@ class PorterLieuRetrait extends Component {
                                                 isDomicile: false,
                                                 isAutre: false,
                                                 isIndifferent: false,
-                                                ville_arrivee:''
+                                                ville_arrivee: ''
                                             },
                                             adresse_point_arrivee: '',
                                             lat_adresse_point_arrivee: 0,
@@ -897,7 +1000,7 @@ class PorterLieuRetrait extends Component {
                                                 placeHolderSelect: t('circuit_depot_annonce.domicile'),
                                                 isAutre: false,
                                                 isIndifferent: false,
-                                                ville_arrivee:''
+                                                ville_arrivee: ''
                                             },
                                             adresse_point_arrivee: '',
                                             lat_adresse_point_arrivee: 0,
@@ -926,7 +1029,7 @@ class PorterLieuRetrait extends Component {
                                                     isAutre: true,
                                                     placeHolderSelect: t('circuit_depot_annonce.autreLieu'),
                                                     isIndifferent: false,
-                                                    ville_arrivee:''
+                                                    ville_arrivee: ''
                                                 },
                                                 adresse_point_arrivee: '',
                                                 lat_adresse_point_arrivee: 0,
@@ -958,7 +1061,7 @@ class PorterLieuRetrait extends Component {
                                                 placeHolderSelect: 'indifferent',
                                                 isAutre: false,
                                                 isIndifferent: true,
-                                                ville_arrivee:''
+                                                ville_arrivee: ''
                                             },
                                             adresse_point_arrivee: '',
                                             lat_adresse_point_arrivee: 0,
@@ -993,118 +1096,152 @@ class PorterLieuRetrait extends Component {
                                         <span style={arrivee.isIndifferent ? {
                                             color: "#4dbded",
                                             lineHeight: 2.5
-                                        } : {color: "#000", lineHeight: 2.5}}>{t('circuit_depot_annonce.indifferent')}</span>
+                                        } : {
+                                            color: "#000",
+                                            lineHeight: 2.5
+                                        }}>{t('circuit_depot_annonce.indifferent')}</span>
 
                                     </div>
                                 </div>
-                                {arrivee.isIndifferent ?  
-                                <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
-                                    <label className="requis">{t('page_home.ville_arrivee')}</label>
-                                    <input type={"text"} name={"ville_arrivee"}
-                                           value={arrivee.ville_arrivee}
-                                           required
-                                           onChange={this.handleChangearrivee}/>
+                                {arrivee.isIndifferent ?
+                                    <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
+                                        <label className="requis">{t('page_home.ville_arrivee')}</label>
+                                        <Autocomplete value={arrivee.ville_arrivee}
+                                                      placeholder={''}
+                                                      name={"ville_arrivee"}
+                                                      apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                      options={{
+                                                          types: ["locality"],
+                                                          componentRestrictions: {country: "fr"},
+                                                      }}
+                                                      onPlaceSelected={(place) => {
+                                                          place.address_components.map(res => res.types[0] == 'locality' ?
+                                                              this.setState(prevState => ({
+                                                                  arrivee: {
+                                                                      ...prevState.arrivee,    // keep all other key-value pairs
+                                                                      ville_arrivee: res.long_name
+                                                                  },
+                                                              }), () => console.log(place)) : null);
+                                                      }}
+                                                      required onChange={this.handleChangearrivee}/>
 
-                                </div> : arrivee.isAutre ?
-                                    <Autocomplete style={{maxWidth: 800}} value={this.state.adresse_point_arrivee}
-                                                  options={{
-                                                      types: ["geocode", "establishment"],
-                                                      strictBounds: true,
-                                                      componentRestrictions: {country: "fr"},
-                                                  }}
-                                                  onChange={(e) => this.setState({adresse_point_arrivee: e.target.value},()=> {
-                                                      console.log(e.target.value)
-                                                      console.log(e)
-                                                      console.log(this.state.adresse_point_arrivee)
-                                                  })}
-                                                  apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
-                                                  onPlaceSelected={(place) => {
-                                                      place.address_components.map(res=>res.types[0] == 'locality'?
-                                                          this.setState(prevState => ({
-                                                              arrivee: {
-                                                                  ...prevState.arrivee,    // keep all other key-value pairs
-                                                                  autreLieux: place.formatted_address,
-                                                                  ville_arrivee: res.long_name,
-                                                              },
-                                                              adresse_point_arrivee: place.formatted_address,
-                                                              lat_adresse_point_arrivee: place.geometry.location.lat(),
-                                                              long_adresse_point_arrivee: place.geometry.location.lng(),
 
-                                                          })):null);
-                                                  }}
-                                    /> :
-                                    <div className={'mx-auto'} style={{maxWidth: 800}}>
-                                        {arrivee.isPointRelais?
-                                            <div className={' text-left mb-2'}>
-                                                <label className="requis">{t('page_home.ville_arrivee')}</label>
-                                                <input type={"text"} name={"ville_arrivee"}
-                                                       value={arrivee.ville_arrivee}
-                                                       required
-                                                       onChange={this.handleChangearrivee}/>
+                                    </div> :
+                                    arrivee.isAutre ?
+                                        <Autocomplete style={{maxWidth: 800}} value={this.state.adresse_point_arrivee}
+                                                      options={{
+                                                          types: ["geocode", "establishment"],
+                                                          strictBounds: true,
+                                                          componentRestrictions: {country: "fr"},
+                                                      }}
+                                                      onChange={(e) => this.setState({adresse_point_arrivee: e.target.value}, () => {
+                                                          console.log(e.target.value)
+                                                          console.log(e)
+                                                          console.log(this.state.adresse_point_arrivee)
+                                                      })}
+                                                      apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                      onPlaceSelected={(place) => {
+                                                          place.address_components.map(res => res.types[0] == 'locality' ?
+                                                              this.setState(prevState => ({
+                                                                  arrivee: {
+                                                                      ...prevState.arrivee,    // keep all other key-value pairs
+                                                                      autreLieux: place.formatted_address,
+                                                                      ville_arrivee: res.long_name,
+                                                                  },
+                                                                  adresse_point_arrivee: place.formatted_address,
+                                                                  lat_adresse_point_arrivee: place.geometry.location.lat(),
+                                                                  long_adresse_point_arrivee: place.geometry.location.lng(),
 
-                                                <br/>   </div>:null}
-                                        <select name={"adresse_point_arrivee"}
-                                                value={(arrivee.isPointRelais && this.state.arrivee.nomEntreprise) ?
-                                                    !this.state.idPointRelaisArr ? '' : this.state.arrivee.nomEntreprise + '-' + this.state.adresse_point_arrivee + '&lat=' + this.state.lat_adresse_point_arrivee + '&long=' + this.state.long_adresse_point_arrivee + '&id=' + this.state.idPointRelaisArr
-                                                    :
-                                                    this.state.lat_adresse_point_arrivee == 0 ? '' :
-                                                        this.state.adresse_point_arrivee + '&lat=' + this.state.lat_adresse_point_arrivee + '&long=' + this.state.long_adresse_point_arrivee
-                                                }
-                                                onChange={(e) => {
-                                                    if (arrivee.isDomicile) {
-                                                        let myLat = e.target.value.split('&lat=')[1]
-                                                        myLat = myLat.split('&long=')[0]
-                                                        arrivee.domicile.map(res=>res.name == e.target.value.split('&lat=')[0]?
-                                                            this.setState(
-                                                                prev=>({
-                                                                    arrivee:{...prev.arrivee,
-                                                                        ville_arrivee: res.ville,
-                                                                    },
-                                                                    adresse_point_arrivee: e.target.value.split('&lat=')[0],
-                                                                    lat_adresse_point_arrivee: myLat,
-                                                                    long_adresse_point_arrivee: e.target.value.split('&long=')[1],
-                                                                }),()=>{
-                                                                    console.log(this.state.lat_adresse_point_arrivee)
-                                                                    console.log(this.state.long_adresse_point_arrivee)
-                                                                }):null)
-                                                    } else {
-                                                        let nomE = e.target.value.split('-')[0]
-                                                        let myLat = e.target.value.split('&lat=')[1]
-                                                        myLat = myLat.split('&long=')[0]
-                                                        let myLng = e.target.value.split('&long=')[1]
-                                                        myLng = myLng.split('&id=')[0]
-                                                        let adr = e.target.value.split('&lat=')[0]
-                                                        this.setState(prev => ({
-                                                            arrivee: {...prev.arrivee, nomEntreprise: nomE},
-                                                            adresse_point_arrivee: adr.split('-')[1],
-                                                            lat_adresse_point_arrivee: myLat,
-                                                            long_adresse_point_arrivee: myLng,
-
-                                                            idPointRelaisArr: e.target.value.split('&id=')[1]
-                                                        }))
-                                                    }
-                                                }}>
-                                            <option key={'-1'} value={''}
-                                                    selected={(arrivee.isPointRelais && !this.state.idPointRelaisArr) || (arrivee.isDomicile && !this.state.lat_adresse_point_arrivee) ? true : false}
-                                                    disabled={true}>{arrivee.placeHolderSelect}
-                                            </option>
+                                                              })) : null);
+                                                      }}
+                                        /> :
+                                        <div className={'mx-auto'} style={{maxWidth: 800}}>
                                             {arrivee.isPointRelais ?
-                                                arrivee.pointRelais.filter(createFilter(arrivee.ville_arrivee, KEYS_TO_FILTERSA)).map(lieu =>
-                                                    !lieu.adress.name ? null : <option key={lieu.id}
-                                                                                       value={lieu.nomEntreprise + '-' + lieu.adress.name + '&lat=' + lieu.adress.lat + '&long=' + lieu.adress.lng + '&id=' + lieu.id}>{lieu.nomEntreprise + '-' + lieu.adress.name}</option>
-                                                ) : arrivee.isDomicile ?
-                                                    arrivee.domicile.map(lieu =>
-                                                        <option key={lieu.id}
-                                                                value={lieu.name + '&lat=' + lieu.lat + '&long=' + lieu.long}>{lieu.name}</option>
-                                                    ) : null}
-                                        </select>
+                                                <div className={' text-left mb-2'}>
+                                                    <label className="requis">{t('page_home.ville_arrivee')}</label>
+                                                    <Autocomplete value={arrivee.ville_arrivee}
+                                                                  placeholder={''}
+                                                                  name={"ville_arrivee"}
+                                                                  apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                                  options={{
+                                                                      types: ["locality"],
+                                                                      componentRestrictions: {country: "fr"},
+                                                                  }}
+                                                                  onPlaceSelected={(place) => {
+                                                                      place.address_components.map(res => res.types[0] == 'locality' ?
+                                                                          this.setState(prevState => ({
+                                                                              arrivee: {
+                                                                                  ...prevState.arrivee,    // keep all other key-value pairs
+                                                                                  ville_arrivee: res.long_name
+                                                                              },
+                                                                          }), () => console.log(place)) : null);
+                                                                  }}
+                                                                  required onChange={this.handleChangearrivee}/>
 
-                                    </div>}
-                                <div
+                                                    <br/></div> : null}
+                                            <select name={"adresse_point_arrivee"}
+                                                    value={(arrivee.isPointRelais && this.state.arrivee.nomEntreprise) ?
+                                                        !this.state.idPointRelaisArr ? '' : this.state.arrivee.nomEntreprise + '-' + this.state.adresse_point_arrivee + '&lat=' + this.state.lat_adresse_point_arrivee + '&long=' + this.state.long_adresse_point_arrivee + '&id=' + this.state.idPointRelaisArr
+                                                        :
+                                                        this.state.lat_adresse_point_arrivee == 0 ? '' :
+                                                            this.state.adresse_point_arrivee + '&lat=' + this.state.lat_adresse_point_arrivee + '&long=' + this.state.long_adresse_point_arrivee
+                                                    }
+                                                    onChange={(e) => {
+                                                        if (arrivee.isDomicile) {
+                                                            let myLat = e.target.value.split('&lat=')[1]
+                                                            myLat = myLat.split('&long=')[0]
+                                                            arrivee.domicile.map(res => res.name == e.target.value.split('&lat=')[0] ?
+                                                                this.setState(
+                                                                    prev => ({
+                                                                        arrivee: {
+                                                                            ...prev.arrivee,
+                                                                            ville_arrivee: res.ville,
+                                                                        },
+                                                                        adresse_point_arrivee: e.target.value.split('&lat=')[0],
+                                                                        lat_adresse_point_arrivee: myLat,
+                                                                        long_adresse_point_arrivee: e.target.value.split('&long=')[1],
+                                                                    }), () => {
+                                                                        console.log(this.state.lat_adresse_point_arrivee)
+                                                                        console.log(this.state.long_adresse_point_arrivee)
+                                                                    }) : null)
+                                                        } else {
+                                                            let nomE = e.target.value.split('-')[0]
+                                                            let myLat = e.target.value.split('&lat=')[1]
+                                                            myLat = myLat.split('&long=')[0]
+                                                            let myLng = e.target.value.split('&long=')[1]
+                                                            myLng = myLng.split('&id=')[0]
+                                                            let adr = e.target.value.split('&lat=')[0]
+                                                            this.setState(prev => ({
+                                                                arrivee: {...prev.arrivee, nomEntreprise: nomE},
+                                                                adresse_point_arrivee: adr.split('-')[1],
+                                                                lat_adresse_point_arrivee: myLat,
+                                                                long_adresse_point_arrivee: myLng,
+
+                                                                idPointRelaisArr: e.target.value.split('&id=')[1]
+                                                            }))
+                                                        }
+                                                    }}>
+                                                <option key={'-1'} value={''}
+                                                        selected={(arrivee.isPointRelais && !this.state.idPointRelaisArr) || (arrivee.isDomicile && !this.state.lat_adresse_point_arrivee) ? true : false}
+                                                        disabled={true}>{arrivee.placeHolderSelect}
+                                                </option>
+                                                {arrivee.isPointRelais ?
+                                                    arrivee.pointRelais.filter(createFilter(arrivee.ville_arrivee, KEYS_TO_FILTERSA)).map(lieu =>
+                                                        !lieu.adress.name ? null : <option key={lieu.id}
+                                                                                           value={lieu.nomEntreprise + '-' + lieu.adress.name + '&lat=' + lieu.adress.lat + '&long=' + lieu.adress.lng + '&id=' + lieu.id}>{lieu.nomEntreprise + '-' + lieu.adress.name}</option>
+                                                    ) : arrivee.isDomicile ?
+                                                        arrivee.domicile.map(lieu =>
+                                                            <option key={lieu.id}
+                                                                    value={lieu.name + '&lat=' + lieu.lat + '&long=' + lieu.long}>{lieu.name}</option>
+                                                        ) : null}
+                                            </select>
+
+                                        </div>}
+                                {this.state.statusAnn ? null : <div
                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                     <button onClick={() => this.publier(0)}
                                             className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                </div>
+                                </div>}
                                 <div
                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                     <button onClick={() => {
@@ -1134,8 +1271,8 @@ class PorterLieuRetrait extends Component {
                                         <span className={'circleOutline'}>4</span>
 
                                     </div>
-                                    {/* <p className={'text-dark-blue'}>{t('circuit_depot_annonce.espaceDisponible')}</p>
-                                    <LazyLoadImage src={"/images/imgEspaceDispo.png"} className={'my-3'}
+                                    <p className={'text-dark-blue'}>{t('circuit_depot_annonce.espaceDisponible')}</p>
+                                    {/*   <LazyLoadImage src={"/images/imgEspaceDispo.png"} className={'my-3'}
                                                    alt={"imgEspaceDispo"}/> */}
                                     <div className='my-3 mx-auto' style={{maxWidth: 800}}>
                                         <p className={'requis text-left'}>{t('circuit_depot_annonce.typeObj')}</p>
@@ -1559,10 +1696,29 @@ class PorterLieuRetrait extends Component {
                                         </div>
                                     </div>
                                     <div className={'row mx-auto'} style={{maxWidth: 800}}>
+                                        <Checkbox checked={this.state.vehicule?.checked} className={"checkMeInImg"}
+                                                  name={this.state.vehicule?.url} onChange={(e) => {
+                                            console.log(e)
+                                            this.setState(prev => ({
+                                                vehicule: {
+                                                    ...prev.vehicule,
+                                                    checked: e.target.checked
+                                                }
+
+                                            }), () => console.log(this.state.vehicule))
+
+                                        }}>
+                                            <LazyLoadImage src={this.state.vehicule?.url}
+                                                           style={{height: 150, width: 'auto'}}/>
+                                        </Checkbox>
+
+                                    </div>
+                                    <div className={'row mx-auto'} style={{maxWidth: 800}}>
                                         <div className={'col-md-9 text-left'}>
                                             <div className={'row text-left'}>
                                                 <div className={'col-md-12 text-left'}>
-                                                    <label className="requis">{t('circuit_depot_annonce.dimensions')}</label>
+                                                    <label
+                                                        className="requis">{t('circuit_depot_annonce.dimensions')}</label>
                                                 </div>
                                                 <div className={'col-md-4 suffix text-left'}>
                                                     <Input type={"number"} name={"dimensionsLong"}
@@ -1594,7 +1750,8 @@ class PorterLieuRetrait extends Component {
                                         <div className={'col-md-3 text-left'}>
                                             <div className={'row text-left'}>
                                                 <div className={'col-md-12 text-left'}>
-                                                    <label className="requis">{t('circuit_depot_annonce.poidsMax')}</label>
+                                                    <label
+                                                        className="requis">{t('circuit_depot_annonce.poidsMax')}</label>
                                                 </div>
                                                 <div className={'col-md-12 suffix text-left'}>
                                                     <Input type={"number"} name={"dimensionsKg"}
@@ -1625,7 +1782,8 @@ class PorterLieuRetrait extends Component {
                                         <div className={'col-md-12 text-left mt-4'}>
                                             <div className={'row text-left'}>
                                                 <div className={'col-md-12 text-left'}>
-                                                    <label className="requis">{t('circuit_depot_annonce.commentaires')}</label>
+                                                    <label
+                                                        className="requis">{t('circuit_depot_annonce.commentaires')}</label>
                                                 </div>
                                                 <div className={'col-md-12 text-left'}>
                                             <textarea name={"commentaires"} value={espace.commentaires}
@@ -1637,11 +1795,11 @@ class PorterLieuRetrait extends Component {
                                     </div>
 
 
-                                    <div
+                                    {this.state.statusAnn ? null : <div
                                         className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                         <button onClick={() => this.publier(0)}
                                                 className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                    </div>
+                                    </div>}
                                     <div
                                         className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                         <button onClick={() => {
@@ -1669,8 +1827,11 @@ class PorterLieuRetrait extends Component {
                                 </section>
                                 :
                                 etape == 4 ?
-                                    <section className={'depotAnnonce container text-center'} >
-                                        <div className={'etapes d-flex flex-row justify-content-center align-items-center'}>
+                                    <section className={'depotAnnonce container text-center'}>
+                                        <div
+                                            className={'etapes d-flex flex-row justify-content-center align-items-center'}>
+                                            {this.state.vehicule.checked ?
+                                                <div src={''} alt={"vehiclue"} style={{width: "15%"}}/> : null}
                                             <span className={'circle'}>1</span>
                                             <span className={'tiretCircle'}/>
                                             <span className={'circle'}>2</span>
@@ -1678,9 +1839,14 @@ class PorterLieuRetrait extends Component {
                                             <span className={'circle'}>3</span>
                                             <span className={'tiretCircle'}/>
                                             <span className={'circle'}>4</span>
+                                            {this.state.vehicule.checked ?
+                                                <LazyLoadImage src={this.state.vehicule.url} alt={"vehiclue"}
+                                                               style={{width: "15%", borderRadius: 30}}/> : null}
                                         </div>
-                                        <p className={'text-dark-blue'}>{t('circuit_depot_annonce.recapAnn')}</p>
-
+                                        <div
+                                            className={'etapes d-flex flex-row justify-content-center align-items-center'}>
+                                            <p className={'text-dark-blue'}>{t('circuit_depot_annonce.recapAnn')}</p>
+                                        </div>
                                         <div className={"recapBorderedBlock"}>
                                             <div className={"d-flex flex-column flex-lg-row"}>
                                                 <div className="d-flex justify-content-between w-100">
@@ -1716,8 +1882,8 @@ class PorterLieuRetrait extends Component {
                                                         </svg>
                                                         {depart.ville_depart}<br/>
                                                         <LazyLoadImage
-                                                            src={"/images/" + depart.placeHolderSelect.toLowerCase().replace(' ', '')  + ".png"}
-                                                            alt={depart.placeHolderSelect.toLowerCase().replace(' ', '') }/>
+                                                            src={"/images/" + depart.placeHolderSelect.toLowerCase().replace(' ', '') + ".png"}
+                                                            alt={depart.placeHolderSelect.toLowerCase().replace(' ', '')}/>
                                                         <br/> <sup style={{
                                                         fontSize: 'x-small',
                                                         color: '#b9b9b9'
@@ -1880,7 +2046,7 @@ class PorterLieuRetrait extends Component {
                                                             className={'d-flex flex-md-row flex-column align-items-center justify-content-between'}>
                                                                 <span>
                                                                     <LazyLoadImage src={"/images/poids.png"}
-                                                                                   alt={'poids'}/> <sub>{espace.dimensionsKg} Kg</sub>
+                                                                                   alt={'poids'}/> <sub>{espace.dimensionsKg}</sub>
                                                                 </span>
                                                             <span>
                                                         {espace.isBagage ?
@@ -2031,8 +2197,8 @@ class PorterLieuRetrait extends Component {
                                                         </svg>
                                                         <br/>
                                                         <LazyLoadImage
-                                                            src={"/images/" + arrivee.placeHolderSelect.toLowerCase().replace(' ', '')  + ".png"}
-                                                            alt={arrivee.placeHolderSelect.toLowerCase().replace(' ', '') }/>
+                                                            src={"/images/" + arrivee.placeHolderSelect.toLowerCase().replace(' ', '') + ".png"}
+                                                            alt={arrivee.placeHolderSelect.toLowerCase().replace(' ', '')}/>
 
                                                         <br/> <sup style={{
                                                         fontSize: 'x-small',
@@ -2088,13 +2254,13 @@ class PorterLieuRetrait extends Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div
+                                        {this.state.statusAnn ? null : <div
                                             className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                             <button onClick={() => {
                                                 this.setState({canDepose: true}, () => this.publier(0))
                                             }}
                                                     className={"btnWhite"}>{t('btns.enregistrer')}</button>
-                                        </div>
+                                        </div>}
                                         <div
                                             className={"d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 my-4"}>
                                             <button onClick={() => {

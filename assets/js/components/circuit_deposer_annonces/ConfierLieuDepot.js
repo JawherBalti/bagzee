@@ -165,7 +165,7 @@ class ConfierLieuDepot extends Component {
                 }
             })
             axios.post('api/profil/photo/list', {token: user?.client?.token}).then(res => {
-                this.setState({mesBagages: res.data.tabGallery},()=>{
+                this.setState({mesBagages: res.data.tabGallery}, () => {
                     console.log(this.state.mesBagages)
                     console.log(this.state.fileList)
                     if (this.props.location.state) {
@@ -241,11 +241,12 @@ class ConfierLieuDepot extends Component {
                                     isBateau: advert.objectTransport.includes("Bateau") ? true : false,
                                     isIndifferentV: advert.objectTransport.includes("IndifferentV") ? true : false,
                                 },
-                            }),()=>{
-                                this.setState(prev=>({
-                                    mesBagages:prev.mesBagages?.map(item=>
-                                        (this.state.fileList.filter(val=>val.url===item.url).length>0 ? Object.assign(item, {checked: true}) : item),
-                                    )}))
+                            }), () => {
+                                this.setState(prev => ({
+                                    mesBagages: prev.mesBagages?.map(item =>
+                                        (this.state.fileList.filter(val => val.url === item.url).length > 0 ? Object.assign(item, {checked: true}) : item),
+                                    )
+                                }))
                             })
                             this.state.settingPriceDep?.map(working =>
                                 (working.checked && this.setState({assurancePriceDep: this.state.assurancePriceDep + working.price}, () => {
@@ -274,9 +275,6 @@ class ConfierLieuDepot extends Component {
         } else {
             this.setState({loading: false})
         }
-
-
-
 
 
     }
@@ -437,18 +435,18 @@ class ConfierLieuDepot extends Component {
             this.handleUpload(e.file.originFileObj)
             console.log(e.file)
         } else if (e.file.status == "removed") {
-            let isRemovedMesBgg= this.state.fileList.filter(val =>
+            let isRemovedMesBgg = this.state.fileList.filter(val =>
                 (val.url === e.file.url))
             console.log(isRemovedMesBgg.length)
-            if(isRemovedMesBgg.length===1){
-                this.setState(prev=>({
-                    mesBagages:prev.mesBagages.map(item=>
+            if (isRemovedMesBgg.length === 1) {
+                this.setState(prev => ({
+                    mesBagages: prev.mesBagages.map(item =>
                         (item.url === e.file.url ? Object.assign(item, {checked: false}) : item),
                     )
-                }),()=>console.log(this.state.mesBagages))
+                }), () => console.log(this.state.mesBagages))
                 console.log(this.state.mesBagages)
             }
-        this.setState({isUploaded: true})
+            this.setState({isUploaded: true})
         }
 
         this.setState(({fileList: e.fileList, loading1: false}), () => {
@@ -720,7 +718,8 @@ class ConfierLieuDepot extends Component {
 
         if (this.state.redirect) {
             return <Redirect
-                to={{pathname: '/annonces',
+                to={{
+                    pathname: '/annonces',
                     state: {
                         role: t('proprietaire'),
                         status: this.state.status,
@@ -755,8 +754,8 @@ class ConfierLieuDepot extends Component {
                                     <span className={'tiretCircle'}/>
                                     <span className={'circleOutline'}>5</span>
                                 </div>
-                                {/* <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuDepot')}</p>
-                                <LazyLoadImage src={"/images/imgConfierLieuDepot.png"} className={'my-3'}
+                                <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuDepot')}</p>
+                                {/*   <LazyLoadImage src={"/images/imgConfierLieuDepot.png"} className={'my-3'}
                                                alt={"imgConfierLieuDepot"}/> */}
                                 <div className={'row mx-auto'} style={{maxWidth: 800}}>
 
@@ -1018,23 +1017,24 @@ class ConfierLieuDepot extends Component {
                                 {depart.isIndifferent ?
                                     <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
                                         <label className='requis'>{t('page_home.ville_depart')}</label>
-                                               <Autocomplete value={depart.ville_depart}
-                                                             name={"ville_depart"}
-                                                             apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
-                                                             options={{
-                                                                 types: ["locality"],
-                                                                 componentRestrictions: { country: "fr" },
-                                                             }}
-                                                             onPlaceSelected={(place) => {
-                                                                 place.address_components.map(res => res.types[0] == 'locality' ?
-                                                                     this.setState(prevState => ({
-                                                                         depart: {
-                                                                             ...prevState.depart,    // keep all other key-value pairs
-                                                                             ville_depart: res.long_name
-                                                                         },
-                                                                     }), () => console.log(place)) : null);
-                                                             }}
-                                                             required onChange={this.handleChangedepart}/>
+                                        <Autocomplete value={depart.ville_depart}
+                                                      placeholder={''}
+                                                      name={"ville_depart"}
+                                                      apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
+                                                      options={{
+                                                          types: ["locality"],
+                                                          componentRestrictions: {country: "fr"},
+                                                      }}
+                                                      onPlaceSelected={(place) => {
+                                                          place.address_components.map(res => res.types[0] == 'locality' ?
+                                                              this.setState(prevState => ({
+                                                                  depart: {
+                                                                      ...prevState.depart,    // keep all other key-value pairs
+                                                                      ville_depart: res.long_name
+                                                                  },
+                                                              }), () => console.log(place)) : null);
+                                                      }}
+                                                      required onChange={this.handleChangedepart}/>
 
                                     </div> : depart.isAutre ?
                                         <Autocomplete style={{maxWidth: 800}}
@@ -1069,11 +1069,12 @@ class ConfierLieuDepot extends Component {
                                                     <div className={'text-left mb-2'}>
                                                         <label className="requis">{t('page_home.ville_depart')}</label>
                                                         <Autocomplete value={depart.ville_depart}
+                                                                      placeholder={''}
                                                                       name={"ville_depart"}
                                                                       apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
                                                                       options={{
                                                                           types: ["locality"],
-                                                                          componentRestrictions: { country: "fr" },
+                                                                          componentRestrictions: {country: "fr"},
                                                                       }}
                                                                       onPlaceSelected={(place) => {
                                                                           place.address_components.map(res => res.types[0] == 'locality' ?
@@ -1155,9 +1156,24 @@ class ConfierLieuDepot extends Component {
                                                             </div>
                                                         )}</div> : null}
                                             </div> : null}
-                                {this.state.statusAnn?null:<div
+                                {this.state.statusAnn ? null : <div
                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
-                                    <button onClick={() => this.publier(0)}
+                                    <button onClick={() => {
+                                        if (user?.client?.isPointRelais) {
+                                            Modal.success({
+                                                content: (
+                                                    <div className={"text-center"} key={'ops' + Math.random()}>
+                                                        <LazyLoadImage src={"/images/logo.png"} width={'65px'}
+                                                                       alt={"bagzee"}/>
+                                                        <p className={"text-danger pt-2"}>
+                                                            vous devez vous connecter
+                                                        </p>
+
+                                                    </div>),
+                                                okText: 'ok',
+                                            });
+                                        } else this.publier(0)
+                                    }}
                                             className={"btnWhite"}>{t('btns.enregistrer')}</button>
                                 </div>}
                                 <div
@@ -1168,8 +1184,23 @@ class ConfierLieuDepot extends Component {
                                     <button
                                         disabled={((this.state.assurancePriceDep == 0 && depart.isPointRelais) || depart.ville_depart == '' || depart.date == '' || depart.heure == '' || (!depart.isIndifferent && this.state.adresse_point_depart == '')) ? true : false}
                                         onClick={() => {
-                                            window.scrollTo(0, 0);
-                                            this.setState({etape: etape + 1})
+                                            if (!user?.client?.token || user?.client?.isPointRelais) {
+                                                Modal.success({
+                                                    content: (
+                                                        <div className={"text-center"} key={'ops' + Math.random()}>
+                                                            <LazyLoadImage src={"/images/logo.png"} width={'65px'}
+                                                                           alt={"bagzee"}/>
+                                                            <p className={"text-danger pt-2"}>
+                                                                vous devez vous connecter
+                                                            </p>
+
+                                                        </div>),
+                                                    okText: 'ok',
+                                                });
+                                            } else {
+                                                window.scrollTo(0, 0);
+                                                this.setState({etape: etape + 1})
+                                            }
                                         }}
                                         className="btnBlue bttn">{t('btns.suivant')}</button>
                                 </div>
@@ -1188,8 +1219,8 @@ class ConfierLieuDepot extends Component {
                                         <span className={'tiretCircle'}/>
                                         <span className={'circleOutline'}>5</span>
                                     </div>
-                                    {/* <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuRetrait')}</p>
-                                    <LazyLoadImage src={"/images/imgConfierLieuRetrait.png"} className={'my-3'}
+                                    <p className={'text-dark-blue'}>{t('circuit_depot_annonce.lieuRetrait')}</p>
+                                    {/*    <LazyLoadImage src={"/images/imgConfierLieuRetrait.png"} className={'my-3'}
                                                    alt={"imgConfierLieuRetrait"}/> */}
                                     <div className={'row mx-auto'} style={{maxWidth: 800}}>
 
@@ -1441,11 +1472,12 @@ class ConfierLieuDepot extends Component {
                                         <div className={'col-12 text-left mb-2 mx-auto'} style={{maxWidth: 800}}>
                                             <label className="requis">{t('page_home.ville_arrivee')}</label>
                                             <Autocomplete value={arrivee.ville_arrivee}
+                                                          placeholder={''}
                                                           name={"ville_arrivee"}
                                                           apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
                                                           options={{
                                                               types: ["locality"],
-                                                              componentRestrictions: { country: "fr" },
+                                                              componentRestrictions: {country: "fr"},
                                                           }}
                                                           onPlaceSelected={(place) => {
                                                               place.address_components.map(res => res.types[0] == 'locality' ?
@@ -1487,11 +1519,12 @@ class ConfierLieuDepot extends Component {
                                                     <div className={'text-left mb-2'}>
                                                         <label className="requis">{t('page_home.ville_arrivee')}</label>
                                                         <Autocomplete value={arrivee.ville_arrivee}
+                                                                      placeholder={''}
                                                                       name={"ville_arrivee"}
                                                                       apiKey={"AIzaSyDq2ZZeHGzuBplFDclItHIDEc-V9-Uhcm0"}
                                                                       options={{
                                                                           types: ["locality"],
-                                                                          componentRestrictions: { country: "fr" },
+                                                                          componentRestrictions: {country: "fr"},
                                                                       }}
                                                                       onPlaceSelected={(place) => {
                                                                           place.address_components.map(res => res.types[0] == 'locality' ?
@@ -1576,7 +1609,7 @@ class ConfierLieuDepot extends Component {
                                                             </div>
                                                         )}</div> : null}
                                             </div>}
-                                    {this.state.statusAnn?null:<div
+                                    {this.state.statusAnn ? null : <div
                                         className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                         <button onClick={() => this.publier(0)}
                                                 className={"btnWhite"}>{t('btns.enregistrer')}</button>
@@ -2097,7 +2130,7 @@ class ConfierLieuDepot extends Component {
                                         </div>
 
 
-                                        {this.state.statusAnn?null:<div
+                                        {this.state.statusAnn ? null : <div
                                             className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                             <button onClick={() => this.publier(0)}
                                                     className={"btnWhite"}>{t('btns.enregistrer')}</button>
@@ -2149,41 +2182,49 @@ class ConfierLieuDepot extends Component {
                                                     <label
                                                         className={'requis d-block w-100 text-left'}>{t('circuit_depot_annonce.ajoutPhoto')}
                                                     </label>
-                                                    {this.state.mesBagages?.map(bgg=><Checkbox checked={bgg.checked} className={"checkMeInImg"} name={bgg.url} onChange={(e)=>{
-                                                        console.log(e)
-                                                        this.setState(prev=>({
-                                                            mesBagages:prev.mesBagages?.map(item=>
-                                                                (item.url === e.target.name ? Object.assign(item, {checked: e.target.checked}) : item),
-                                                            )
-                                                        }),()=>console.log(this.state.mesBagages))
-                                                        if(e.target.checked) {
+                                                    {this.state.mesBagages?.map(bgg =>
+                                                        <Checkbox checked={bgg.checked}
+                                                                  className={fileList.length >= 10 ? "checkMeInImg disabled" : "checkMeInImg"}
+                                                                  name={bgg.url} onChange={(e) => {
+                                                            console.log(e)
+                                                            this.setState(prev => ({
+                                                                mesBagages: prev.mesBagages?.map(item =>
+                                                                    (item.url === e.target.name ? Object.assign(item, {checked: e.target.checked}) : item),
+                                                                )
+                                                            }), () => console.log(this.state.mesBagages))
+                                                            if (e.target.checked) {
 
-                                                            let dejaUploaded=false
-                                                            this.state.fileList.map(val =>
-                                                                (val.url === e.target.name? dejaUploaded=true: null))
-                                                            if(!dejaUploaded) {
+                                                                let dejaUploaded = false
+                                                                this.state.fileList.map(val =>
+                                                                    (val.url === e.target.name ? dejaUploaded = true : null))
+                                                                if (!dejaUploaded) {
+                                                                    this.setState(prevState => ({
+                                                                        gellery: [...prevState.gellery, {
+                                                                            url: e.target.name
+                                                                        }],
+                                                                        fileList: [...prevState.fileList, {
+                                                                            url: e.target.name
+                                                                        }]
+
+                                                                    }), () => {
+                                                                        this.setState({isUploaded: true})
+                                                                        console.log(this.state.fileList)
+                                                                    })
+                                                                }
+                                                            } else {
                                                                 this.setState(prevState => ({
-                                                                    gellery: [...prevState.gellery, {
-                                                                        url: e.target.name
-                                                                    }],
-                                                                    fileList: [...prevState.fileList, {
-                                                                        url: e.target.name
-                                                                    }]
-
-                                                                }), () => {
-                                                                    this.setState({isUploaded: true})
-                                                                    console.log(this.state.fileList)
-                                                                })
+                                                                    gellery: prevState.gellery.filter(val =>
+                                                                        (val.url !== e.target.name)),
+                                                                    fileList: prevState.fileList.filter(val =>
+                                                                        (val.url !== e.target.name))
+                                                                }))
                                                             }
-                                                        }else{
-                                                            this.setState(prevState=>({
-                                                                gellery: prevState.gellery.filter(val =>
-                                                                    (val.url !== e.target.name)),
-                                                                fileList: prevState.fileList.filter(val =>
-                                                                    (val.url !== e.target.name))
-                                                            }))
-                                                        }
-                                                    }}><LazyLoadImage src={bgg.url} style={{height:150,width:'auto'}}/> </Checkbox>)}
+                                                        }}>
+                                                            <LazyLoadImage src={bgg.url}
+                                                                           readOnly={fileList.length >= 10 ? true : false}
+                                                                           style={{height: 150, width: 'auto'}}/>
+                                                        </Checkbox>
+                                                    )}
                                                     <div className="clearfix text-md-left text-center mt-3">
                                                         <Upload
                                                             action=""
@@ -2206,7 +2247,7 @@ class ConfierLieuDepot extends Component {
                                                 </div>
                                             </div>
 
-                                            {this.state.statusAnn?null:<div
+                                            {this.state.statusAnn ? null : <div
                                                 className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                                 <button disabled={!this.state.isUploaded ? true : false}
                                                         onClick={() => this.publier(0)}
@@ -2548,7 +2589,7 @@ class ConfierLieuDepot extends Component {
                             src={"/images/poids.png"}
                             alt={"poids"}
                         />{" "}
-                          <sub>{bagages.dimensionsKg} Kg</sub>
+                          <sub>{bagages.dimensionsKg}</sub>
                       </span>
                                                                     <span>
                         {bagages.isBagage ? (
@@ -2857,7 +2898,8 @@ class ConfierLieuDepot extends Component {
                                                 </div>
                                                 <div
                                                     className='prix w-75 mx-auto my-4 text-blue d-flex flex-row align-items-center justify-content-between p-2 rounded-pill '>
-                                                    <div>{t('circuit_depot_annonce.priceTotal')}: <small>{t('circuit_depot_annonce.remunerationPorteurCommissionBagzee')}</small></div>
+                                                    <div>{t('circuit_depot_annonce.priceTotal')}: <small>{t('circuit_depot_annonce.remunerationPorteurCommissionBagzee')}</small>
+                                                    </div>
                                                     <div className={"d-flex flex-row align-items-center"}>
                                                         <button className="btnCircleBleu" onClick={() => {
                                                             this.state.newprice > price ? this.setState({newprice: this.state.newprice - 1}) : null
@@ -2872,7 +2914,7 @@ class ConfierLieuDepot extends Component {
                                                         </button>
                                                     </div>
                                                 </div>
-                                                {this.state.statusAnn?null:<div
+                                                {this.state.statusAnn ? null : <div
                                                     className='d-flex flex-column flex-md-row gap-2 justify-content-center align-items-center my-5'>
                                                     <button onClick={() => {
                                                         this.setState({canDepose: fileList.length ? true : false}, () => this.publier(0))
